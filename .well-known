@@ -1,0 +1,8 @@
+[{
+      "relation": ["delegate_permission/common.handle_all_urls"],
+      "target": {
+        "namespace": "android_app",
+        "package_name": "app.netlify.direkapin.twa",
+        "sha256_cert_fingerprints": ["0C:87:20:66:AA:50:AB:AB:AB:CA:67:8C:99:BD:A2:26:01:51:19:5F:FB:79:93:CF:B4:38:A7:2B:11:BE:2A:5F"]
+      }
+    }]
