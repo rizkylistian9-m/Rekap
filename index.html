@@ -30,10 +30,49 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <!-- FontAwesome Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Firebase SDK (Compat) -->
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
 </head>
 <body class="bg-gray-100 dark:bg-gray-900 text-gray-800 dark:text-gray-100 flex flex-col pb-24 transition-colors duration-200 w-full overflow-x-hidden min-h-screen">
 
-    <!-- Top App Bar dengan Logo & Pengaturan Bahasa Global -->
+    <!-- ================= Halaman Login / Auth ================= -->
+    <div id="authScreen" class="fixed inset-0 bg-gray-900 z-50 flex items-center justify-center p-4 hidden">
+        <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-xl p-6 w-full max-w-sm space-y-4 border dark:border-gray-700">
+            <div class="text-center space-y-1">
+                <div class="w-12 h-12 rounded-full bg-gradient-to-tr from-blue-600 to-sky-400 flex items-center justify-center text-white mx-auto shadow-md">
+                    <i class="fa-solid fa-wallet text-lg"></i>
+                </div>
+                <h1 class="font-bold text-lg text-blue-600 dark:text-blue-400">KI-KAP</h1>
+                <p id="authSubtitle" class="text-xs text-gray-400">Masuk untuk mengelola keuanganmu</p>
+            </div>
+
+            <div id="authError" class="bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400 text-xs p-2.5 rounded-xl hidden"></div>
+
+            <form onsubmit="handleAuth(event)" class="space-y-3">
+                <div>
+                    <label class="block text-[10px] text-gray-400 mb-1">Email</label>
+                    <input type="email" id="authEmail" required class="w-full bg-gray-50 dark:bg-gray-700 border dark:border-gray-600 rounded-xl px-3 py-2 text-xs focus:ring-2 focus:ring-blue-500 focus:outline-none">
+                </div>
+                <div>
+                    <label class="block text-[10px] text-gray-400 mb-1">Password</label>
+                    <input type="password" id="authPassword" required minlength="6" class="w-full bg-gray-50 dark:bg-gray-700 border dark:border-gray-600 rounded-xl px-3 py-2 text-xs focus:ring-2 focus:ring-blue-500 focus:outline-none">
+                </div>
+                <button type="submit" id="authSubmitBtn" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-xl py-2.5 text-xs transition-colors shadow-md">
+                    Masuk
+                </button>
+            </form>
+
+            <div class="text-center pt-2">
+                <button type="button" onclick="toggleAuthMode()" id="authSwitchBtn" class="text-[11px] text-blue-600 dark:text-blue-400 hover:underline">
+                    Belum punya akun? Daftar di sini
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ================= Aplikasi Utama ================= -->
     <header class="bg-white dark:bg-gray-800 border-b dark:border-gray-700 px-3 py-2.5 sticky top-0 z-40 flex items-center justify-between shadow-sm w-full">
         <div class="flex items-center gap-2">
             <div class="w-8 h-8 rounded-full bg-gradient-to-tr from-blue-600 to-sky-400 flex items-center justify-center text-white shadow-sm border border-blue-200 dark:border-blue-800 flex-shrink-0">
@@ -45,7 +84,6 @@
             </div>
         </div>
         <div class="flex items-center gap-1">
-            <!-- Pilihan Bahasa Diperluas -->
             <select id="langSelect" onchange="changeLanguage()" class="bg-gray-100 dark:bg-gray-700 border dark:border-gray-600 rounded-lg px-1.5 py-1 text-[10px] font-medium focus:outline-none">
                 <option value="id">ID</option>
                 <option value="en">EN</option>
@@ -56,7 +94,6 @@
                 <option value="zh">ZH</option>
                 <option value="ar">AR</option>
             </select>
-            <!-- Pilihan Mata Uang -->
             <select id="currencySelect" onchange="changeCurrency()" class="bg-gray-100 dark:bg-gray-700 border dark:border-gray-600 rounded-lg px-1.5 py-1 text-[10px] font-medium focus:outline-none">
                 <option value="IDR">IDR</option>
                 <option value="USD">USD</option>
@@ -67,16 +104,16 @@
                 <option value="GBP">GBP</option>
                 <option value="SAR">SAR</option>
             </select>
-            <!-- Dark Mode Toggle -->
             <button onclick="toggleDarkMode()" class="bg-gray-100 dark:bg-gray-700 p-1 rounded-lg text-xs w-7 h-7 flex items-center justify-center flex-shrink-0">
                 <i id="modeIconClass" class="fa-solid fa-sun text-xs"></i>
+            </button>
+            <button onclick="logoutUser()" class="bg-red-50 dark:bg-red-900/30 text-red-500 p-1 rounded-lg text-xs w-7 h-7 flex items-center justify-center flex-shrink-0" title="Keluar">
+                <i class="fa-solid fa-right-from-bracket text-xs"></i>
             </button>
         </div>
     </header>
 
-    <!-- Konten Utama -->
     <main class="px-3 py-3 w-full space-y-3 mb-6">
-        
         <!-- 1. Tab: Rekap Harian -->
         <div id="content-harian" class="tab-content space-y-3 w-full">
             <div class="flex items-center justify-between w-full bg-white dark:bg-gray-800 p-3 rounded-2xl shadow-sm border dark:border-gray-700">
@@ -102,7 +139,6 @@
                 </div>
             </div>
 
-            <!-- Form Tambah/Edit Transaksi -->
             <div class="bg-white dark:bg-gray-800 p-3.5 rounded-2xl shadow-sm border dark:border-gray-700 space-y-2.5 w-full">
                 <h3 id="txt-add-title" class="font-bold text-xs flex items-center gap-1.5"><i class="fa-solid fa-plus-circle text-blue-600"></i> Tambah Transaksi</h3>
                 <form id="transactionForm" onsubmit="handleTransactionForm(event)" class="space-y-2.5 w-full">
@@ -115,9 +151,7 @@
                             <option value="Pemasukan">Pemasukan</option>
                             <option value="Pengeluaran">Pengeluaran</option>
                         </select>
-                        <select id="txCategory" class="bg-gray-50 dark:bg-gray-700 border dark:border-gray-600 rounded-xl px-2.5 py-1.5 text-xs focus:ring-2 focus:ring-blue-500 focus:outline-none w-full">
-                            <!-- Diisi otomatis -->
-                        </select>
+                        <select id="txCategory" class="bg-gray-50 dark:bg-gray-700 border dark:border-gray-600 rounded-xl px-2.5 py-1.5 text-xs focus:ring-2 focus:ring-blue-500 focus:outline-none w-full"></select>
                     </div>
                     <input type="text" id="txDesc" placeholder="Keterangan (opsional)" class="w-full bg-gray-50 dark:bg-gray-700 border dark:border-gray-600 rounded-xl px-2.5 py-1.5 text-xs focus:ring-2 focus:ring-blue-500 focus:outline-none">
                     <input type="number" id="txt-amount-placeholder" placeholder="Nominal" required min="1" class="w-full bg-gray-50 dark:bg-gray-700 border dark:border-gray-600 rounded-xl px-2.5 py-1.5 text-xs focus:ring-2 focus:ring-blue-500 focus:outline-none">
@@ -133,7 +167,6 @@
                 </form>
             </div>
 
-            <!-- Tabel Transaksi -->
             <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border dark:border-gray-700 overflow-hidden w-full">
                 <div class="p-3 border-b dark:border-gray-700 flex justify-between items-center">
                     <h3 id="txt-list-title" class="font-bold text-xs">Daftar Transaksi</h3>
@@ -150,9 +183,7 @@
                                 <th id="txt-th-action" class="p-2 text-center">Aksi</th>
                             </tr>
                         </thead>
-                        <tbody id="transactionTableBody" class="divide-y divide-gray-100 dark:divide-gray-700">
-                            <!-- Diisi JS -->
-                        </tbody>
+                        <tbody id="transactionTableBody" class="divide-y divide-gray-100 dark:divide-gray-700"></tbody>
                     </table>
                 </div>
             </div>
@@ -202,9 +233,7 @@
                     <h2 id="txt-tahunan-title" class="text-base font-bold">Rekap Tahunan</h2>
                     <p id="txt-tahunan-desc" class="text-[11px] text-gray-400">Analisis keuangan tahunan</p>
                 </div>
-                <select id="filterYear" onchange="renderApp()" class="bg-gray-50 dark:bg-gray-700 border dark:border-gray-600 px-2.5 py-1 rounded-xl text-xs shadow-sm focus:outline-none">
-                    <!-- Diisi JS -->
-                </select>
+                <select id="filterYear" onchange="renderApp()" class="bg-gray-50 dark:bg-gray-700 border dark:border-gray-600 px-2.5 py-1 rounded-xl text-xs shadow-sm focus:outline-none"></select>
             </div>
 
             <div class="grid grid-cols-3 gap-2 w-full">
@@ -234,9 +263,7 @@
                                 <th id="txt-th-net" class="p-2 text-right">Saldo</th>
                             </tr>
                         </thead>
-                        <tbody id="yearlyTableBody" class="divide-y divide-gray-100 dark:divide-gray-700">
-                            <!-- Diisi JS -->
-                        </tbody>
+                        <tbody id="yearlyTableBody" class="divide-y divide-gray-100 dark:divide-gray-700"></tbody>
                     </table>
                 </div>
             </div>
@@ -260,9 +287,7 @@
                 </form>
             </div>
 
-            <div class="space-y-3 w-full" id="savingsGoalsContainer">
-                <!-- Dirender lewat JS -->
-            </div>
+            <div class="space-y-3 w-full" id="savingsGoalsContainer"></div>
         </div>
 
         <!-- 5. Tab: Grafik Analitik -->
@@ -275,21 +300,15 @@
             <div class="space-y-3 w-full">
                 <div class="bg-white dark:bg-gray-800 p-3.5 rounded-2xl shadow-sm border dark:border-gray-700 w-full">
                     <h3 id="txt-chart-1" class="font-bold text-xs mb-2 text-gray-600 dark:text-gray-300">Pemasukan vs Pengeluaran</h3>
-                    <div class="h-48 relative flex items-center justify-center w-full">
-                        <canvas id="chartPieIncExp"></canvas>
-                    </div>
+                    <div class="h-48 relative flex items-center justify-center w-full"><canvas id="chartPieIncExp"></canvas></div>
                 </div>
                 <div class="bg-white dark:bg-gray-800 p-3.5 rounded-2xl shadow-sm border dark:border-gray-700 w-full">
                     <h3 id="txt-chart-2" class="font-bold text-xs mb-2 text-red-500">Volume Pengeluaran per Kategori</h3>
-                    <div class="h-48 relative flex items-center justify-center w-full">
-                        <canvas id="chartBarExpCat"></canvas>
-                    </div>
+                    <div class="h-48 relative flex items-center justify-center w-full"><canvas id="chartBarExpCat"></canvas></div>
                 </div>
                 <div class="bg-white dark:bg-gray-800 p-3.5 rounded-2xl shadow-sm border dark:border-gray-700 w-full">
                     <h3 id="txt-chart-3" class="font-bold text-xs mb-2 text-blue-600">Volume Pemasukan per Kategori</h3>
-                    <div class="h-48 relative flex items-center justify-center w-full">
-                        <canvas id="chartBarIncCat"></canvas>
-                    </div>
+                    <div class="h-48 relative flex items-center justify-center w-full"><canvas id="chartBarIncCat"></canvas></div>
                 </div>
             </div>
         </div>
@@ -320,14 +339,29 @@
         </button>
     </nav>
 
-    <!-- JavaScript Logika Aplikasi dengan Dukungan 8 Bahasa -->
+    <!-- JavaScript Logika Aplikasi & Firebase -->
     <script>
-        let transactions = JSON.parse(localStorage.getItem('kikap_transactions')) || [];
-        let currency = localStorage.getItem('kikap_currency') || 'IDR';
-        let lang = localStorage.getItem('kikap_lang') || 'id';
-        let darkMode = localStorage.getItem('kikap_dark') === 'true';
-        let savingsGoals = JSON.parse(localStorage.getItem('kikap_savings_goals')) || [];
+        // Konfigurasi Firebase Anda yang asli
+        const firebaseConfig = {
+            apiKey: "AIzaSyA11tfwNemvPGBPF0_KdlDeghyml1PJZAE",
+            authDomain: "kikap-8d39c.firebaseapp.com",
+            projectId: "kikap-8d39c",
+            storageBucket: "kikap-8d39c.firebasestorage.app",
+            messagingSenderId: "802110798490",
+            appId: "1:802110798490:web:40e32ebdd27a70f7bfbd23",
+            measurementId: "G-2W2PZQE5ZZ"
+        };
+
+        firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth();
+
+        let transactions = [];
+        let savingsGoals = [];
+        let currency = 'IDR';
+        let lang = 'id';
+        let darkMode = false;
         let editingId = null;
+        let isSignUpMode = false;
 
         let chartIncExpInstance = null;
         let chartExpCatInstance = null;
@@ -512,30 +546,103 @@
             }
         };
 
-        const todayStr = new Date().toISOString().split('T')[0];
-        document.getElementById('filterDate').value = todayStr;
-        document.getElementById('txDate').value = todayStr;
-        document.getElementById('filterMonth').value = todayStr.slice(0, 7);
-        
-        const yearSelect = document.getElementById('filterYear');
-        const currentYear = new Date().getFullYear();
-        for (let y = currentYear - 2; y <= currentYear + 2; y++) {
-            let opt = document.createElement('option');
-            opt.value = y;
-            opt.textContent = y;
-            if (y === currentYear) opt.selected = true;
-            yearSelect.appendChild(opt);
+        auth.onAuthStateChanged(user => {
+            const authScreen = document.getElementById('authScreen');
+            if (user) {
+                authScreen.classList.add('hidden');
+                loadUserData(user.uid);
+            } else {
+                authScreen.classList.remove('hidden');
+            }
+        });
+
+        function toggleAuthMode() {
+            isSignUpMode = !isSignUpMode;
+            const btn = document.getElementById('authSubmitBtn');
+            const switchBtn = document.getElementById('authSwitchBtn');
+            const sub = document.getElementById('authSubtitle');
+            if (isSignUpMode) {
+                btn.textContent = "Daftar Akun Baru";
+                switchBtn.textContent = "Sudah punya akun? Masuk di sini";
+                sub.textContent = "Buat akun baru untuk mulai mencatat";
+            } else {
+                btn.textContent = "Masuk";
+                switchBtn.textContent = "Belum punya akun? Daftar di sini";
+                sub.textContent = "Masuk untuk mengelola keuanganmu";
+            }
         }
 
-        document.getElementById('currencySelect').value = currency;
-        document.getElementById('langSelect').value = lang;
+        function handleAuth(e) {
+            e.preventDefault();
+            const email = document.getElementById('authEmail').value;
+            const pass = document.getElementById('authPassword').value;
+            const errBox = document.getElementById('authError');
+            errBox.classList.add('hidden');
 
-        if (darkMode) {
-            document.documentElement.classList.add('dark');
-            document.getElementById('modeIconClass').className = "fa-solid fa-moon text-xs";
-        } else {
-            document.documentElement.classList.remove('dark');
-            document.getElementById('modeIconClass').className = "fa-solid fa-sun text-xs";
+            const promise = isSignUpMode ? auth.createUserWithEmailAndPassword(email, pass) : auth.signInWithEmailAndPassword(email, pass);
+
+            promise.catch(error => {
+                errBox.textContent = error.message;
+                errBox.classList.remove('hidden');
+            });
+        }
+
+        function logoutUser() {
+            auth.signOut().then(() => {
+                window.location.reload();
+            });
+        }
+
+        function loadUserData(uid) {
+            transactions = JSON.parse(localStorage.getItem('kikap_tx_' + uid)) || [];
+            savingsGoals = JSON.parse(localStorage.getItem('kikap_goals_' + uid)) || [];
+            currency = localStorage.getItem('kikap_cur_' + uid) || 'IDR';
+            lang = localStorage.getItem('kikap_lang_' + uid) || 'id';
+            darkMode = localStorage.getItem('kikap_dark_' + uid) === 'true';
+
+            initApp();
+        }
+
+        function saveUserData() {
+            const user = auth.currentUser;
+            if (!user) return;
+            localStorage.setItem('kikap_tx_' + user.uid, JSON.stringify(transactions));
+            localStorage.setItem('kikap_goals_' + user.uid, JSON.stringify(savingsGoals));
+            localStorage.setItem('kikap_cur_' + user.uid, currency);
+            localStorage.setItem('kikap_lang_' + user.uid, lang);
+            localStorage.setItem('kikap_dark_' + user.uid, darkMode);
+        }
+
+        function initApp() {
+            const todayStr = new Date().toISOString().split('T')[0];
+            document.getElementById('filterDate').value = todayStr;
+            document.getElementById('txDate').value = todayStr;
+            document.getElementById('filterMonth').value = todayStr.slice(0, 7);
+            
+            const yearSelect = document.getElementById('filterYear');
+            yearSelect.innerHTML = '';
+            const currentYear = new Date().getFullYear();
+            for (let y = currentYear - 2; y <= currentYear + 2; y++) {
+                let opt = document.createElement('option');
+                opt.value = y;
+                opt.textContent = y;
+                if (y === currentYear) opt.selected = true;
+                yearSelect.appendChild(opt);
+            }
+
+            document.getElementById('currencySelect').value = currency;
+            document.getElementById('langSelect').value = lang;
+
+            if (darkMode) {
+                document.documentElement.classList.add('dark');
+                document.getElementById('modeIconClass').className = "fa-solid fa-moon text-xs";
+            } else {
+                document.documentElement.classList.remove('dark');
+                document.getElementById('modeIconClass').className = "fa-solid fa-sun text-xs";
+            }
+
+            applyLanguage();
+            switchTab('harian');
         }
 
         function applyLanguage() {
@@ -560,7 +667,7 @@
             const cancelBtn = document.getElementById('cancelEditBtn');
             if (editingId !== null) {
                 cancelBtn.classList.remove('hidden');
-                cancelBtn.textContent = lang === 'en' ? 'Cancel' : (lang === 'zh' ? '取消' : (lang === 'ar' ? 'إلغاء' : 'Batal'));
+                cancelBtn.textContent = 'Batal';
             } else {
                 cancelBtn.classList.add('hidden');
             }
@@ -616,7 +723,7 @@
 
         function changeLanguage() {
             lang = document.getElementById('langSelect').value;
-            localStorage.setItem('kikap_lang', lang);
+            saveUserData();
             applyLanguage();
             renderApp();
         }
@@ -670,7 +777,7 @@
 
         function toggleDarkMode() {
             darkMode = !darkMode;
-            localStorage.setItem('kikap_dark', darkMode);
+            saveUserData();
             if (darkMode) {
                 document.documentElement.classList.add('dark');
                 document.getElementById('modeIconClass').className = "fa-solid fa-moon text-xs";
@@ -682,7 +789,7 @@
 
         function changeCurrency() {
             currency = document.getElementById('currencySelect').value;
-            localStorage.setItem('kikap_currency', currency);
+            saveUserData();
             renderApp();
         }
 
@@ -701,10 +808,9 @@
                 transactions.push({ id: Date.now(), date, type, category, desc, amount });
             }
 
-            localStorage.setItem('kikap_transactions', JSON.stringify(transactions));
-
+            saveUserData();
             document.getElementById('transactionForm').reset();
-            document.getElementById('txDate').value = todayStr;
+            document.getElementById('txDate').value = new Date().toISOString().split('T')[0];
             applyLanguage();
             updateCategoryOptions();
             renderApp();
@@ -733,14 +839,14 @@
         function cancelEdit() {
             editingId = null;
             document.getElementById('transactionForm').reset();
-            document.getElementById('txDate').value = todayStr;
+            document.getElementById('txDate').value = new Date().toISOString().split('T')[0];
             applyLanguage();
             updateCategoryOptions();
         }
 
         function deleteTransaction(id) {
             transactions = transactions.filter(t => t.id !== id);
-            localStorage.setItem('kikap_transactions', JSON.stringify(transactions));
+            saveUserData();
             renderApp();
         }
 
@@ -748,7 +854,7 @@
             const t = dict[lang] || dict['id'];
             if(confirm(t.confReset)) {
                 transactions = [];
-                localStorage.removeItem('kikap_transactions');
+                saveUserData();
                 editingId = null;
                 applyLanguage();
                 renderApp();
@@ -762,14 +868,14 @@
             if(!name || isNaN(target) || target <= 0) return;
 
             savingsGoals.push({ id: Date.now(), name, target });
-            localStorage.setItem('kikap_savings_goals', JSON.stringify(savingsGoals));
+            saveUserData();
             document.getElementById('goalForm').reset();
             renderApp();
         }
 
         function deleteSavingsGoal(id) {
             savingsGoals = savingsGoals.filter(g => g.id !== id);
-            localStorage.setItem('kikap_savings_goals', JSON.stringify(savingsGoals));
+            saveUserData();
             renderApp();
         }
 
@@ -904,9 +1010,6 @@
                 options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { x: { ticks: { font: { size: 8 } } } } }
             });
         }
-
-        applyLanguage();
-        switchTab('harian');
     </script>
 </body>
 </html>
