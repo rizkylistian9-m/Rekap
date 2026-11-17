@@ -314,8 +314,8 @@
         </div>
     </main>
 
-    <!-- Bottom Navigation Bar -->
-    <nav class="fixed bottom-0 inset-x-0 bg-white dark:bg-gray-800 border-t dark:border-gray-700 flex justify-around py-2 z-50 shadow-lg w-full">
+    <!-- Bottom Navigation Bar (Diberi id="bottomNav") -->
+    <nav id="bottomNav" class="fixed bottom-0 inset-x-0 bg-white dark:bg-gray-800 border-t dark:border-gray-700 flex justify-around py-2 z-50 shadow-lg w-full hidden">
         <button onclick="switchTab('harian')" class="nav-btn flex flex-col items-center py-1 px-3 text-gray-400 transition-colors" data-tab="harian">
             <i class="fa-solid fa-calendar-day text-sm"></i>
             <span id="txt-nav-harian" class="text-[9px] mt-0.5 font-medium">Harian</span>
@@ -341,7 +341,6 @@
 
     <!-- JavaScript Logika Aplikasi & Firebase -->
     <script>
-        // Konfigurasi Firebase Anda yang asli
         const firebaseConfig = {
             apiKey: "AIzaSyA11tfwNemvPGBPF0_KdlDeghyml1PJZAE",
             authDomain: "kikap-8d39c.firebaseapp.com",
@@ -548,11 +547,14 @@
 
         auth.onAuthStateChanged(user => {
             const authScreen = document.getElementById('authScreen');
+            const bottomNav = document.getElementById('bottomNav');
             if (user) {
                 authScreen.classList.add('hidden');
+                bottomNav.classList.remove('hidden'); // Tampilkan navbar bawah saat sudah login
                 loadUserData(user.uid);
             } else {
                 authScreen.classList.remove('hidden');
+                bottomNav.classList.add('hidden'); // Sembunyikan navbar bawah saat di halaman login
             }
         });
 
