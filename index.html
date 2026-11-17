@@ -102,6 +102,10 @@
             <div class="bg-white dark:bg-gray-800 p-3.5 rounded-2xl shadow-sm border dark:border-gray-700 space-y-2.5 w-full">
                 <h3 id="txt-add-title" class="font-bold text-xs flex items-center gap-1.5"><i class="fa-solid fa-plus-circle text-blue-600"></i> Tambah Transaksi</h3>
                 <form id="transactionForm" onsubmit="handleTransactionForm(event)" class="space-y-2.5 w-full">
+                    <div>
+                        <label id="txt-label-date" class="block text-[10px] text-gray-400 mb-1">Tanggal Transaksi</label>
+                        <input type="date" id="txDate" required class="w-full bg-gray-50 dark:bg-gray-700 border dark:border-gray-600 rounded-xl px-2.5 py-1.5 text-xs focus:ring-2 focus:ring-blue-500 focus:outline-none">
+                    </div>
                     <div class="grid grid-cols-2 gap-2 w-full">
                         <select id="txType" onchange="updateCategoryOptions()" class="bg-gray-50 dark:bg-gray-700 border dark:border-gray-600 rounded-xl px-2.5 py-1.5 text-xs focus:ring-2 focus:ring-blue-500 focus:outline-none w-full">
                             <option value="Pemasukan">Pemasukan</option>
@@ -113,9 +117,15 @@
                     </div>
                     <input type="text" id="txDesc" placeholder="Keterangan (opsional)" class="w-full bg-gray-50 dark:bg-gray-700 border dark:border-gray-600 rounded-xl px-2.5 py-1.5 text-xs focus:ring-2 focus:ring-blue-500 focus:outline-none">
                     <input type="number" id="txt-amount-placeholder" placeholder="Nominal" required min="1" class="w-full bg-gray-50 dark:bg-gray-700 border dark:border-gray-600 rounded-xl px-2.5 py-1.5 text-xs focus:ring-2 focus:ring-blue-500 focus:outline-none">
-                    <button type="submit" id="txt-save-btn" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-xl py-2 text-xs transition-colors shadow-md flex items-center justify-center gap-1.5">
-                        <i class="fa-solid fa-save"></i> Simpan Transaksi
-                    </button>
+                    
+                    <div class="flex gap-2 w-full">
+                        <button type="submit" id="txt-save-btn" class="flex-1 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-xl py-2 text-xs transition-colors shadow-md flex items-center justify-center gap-1.5">
+                            <i class="fa-solid fa-save"></i> Simpan Transaksi
+                        </button>
+                        <button type="button" id="cancelEditBtn" onclick="cancelEdit()" class="hidden bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 text-gray-700 dark:text-gray-200 font-medium rounded-xl px-3 py-2 text-xs transition-colors">
+                            Batal
+                        </button>
+                    </div>
                 </form>
             </div>
 
@@ -324,7 +334,8 @@
                 subtitle: "Keuangan Pintar & Praktis",
                 harian: "Rekap Harian", harianDesc: "Kelola catatan harianmu",
                 inc: "Pemasukan", exp: "Pengeluaran", bal: "Sisa Saldo",
-                addTitle: "Tambah Transaksi", editTitle: "Edit Transaksi", descPh: "Keterangan (opsional)", amtPh: "Nominal", saveBtn: "Simpan Transaksi", updateBtn: "Update Transaksi",
+                addTitle: "Tambah Transaksi", editTitle: "Edit Transaksi", labelDate: "Tanggal Transaksi",
+                descPh: "Keterangan (opsional)", amtPh: "Nominal", saveBtn: "Simpan Transaksi", updateBtn: "Update Transaksi",
                 listTitle: "Daftar Transaksi", reset: "Reset", thDate: "Tanggal", thType: "Tipe", thCat: "Kategori", thAmount: "Nominal", thAction: "Aksi",
                 emptyTx: "Belum ada transaksi.",
                 bulanan: "Rekap Bulanan", bulananDesc: "Ringkasan transaksi bulanan", mBal: "Saldo",
@@ -345,7 +356,8 @@
                 subtitle: "Smart & Practical Finance",
                 harian: "Daily Summary", harianDesc: "Manage your daily notes",
                 inc: "Income", exp: "Expense", bal: "Remaining Balance",
-                addTitle: "Add Transaction", editTitle: "Edit Transaction", descPh: "Description (optional)", amtPh: "Amount", saveBtn: "Save Transaction", updateBtn: "Update Transaction",
+                addTitle: "Add Transaction", editTitle: "Edit Transaction", labelDate: "Transaction Date",
+                descPh: "Description (optional)", amtPh: "Amount", saveBtn: "Save Transaction", updateBtn: "Update Transaction",
                 listTitle: "Transaction List", reset: "Reset", thDate: "Date", thType: "Type", thCat: "Category", thAmount: "Amount", thAction: "Action",
                 emptyTx: "No transactions yet.",
                 bulanan: "Monthly Summary", bulananDesc: "Monthly transaction summary", mBal: "Balance",
@@ -366,7 +378,8 @@
                 subtitle: "Keuangan Pintar & Praktis",
                 harian: "Rekap Dina Iki", harianDesc: "Kelola catetan dinanmu",
                 inc: "Pemasukan", exp: "Pengeluaran", bal: "Sisa Saldo",
-                addTitle: "Tambah Transaksi", editTitle: "Edit Transaksi", descPh: "Keterangan (opsional)", amtPh: "Nominal", saveBtn: "Simpen Transaksi", updateBtn: "Update Transaksi",
+                addTitle: "Tambah Transaksi", editTitle: "Edit Transaksi", labelDate: "Tanggal Transaksi",
+                descPh: "Keterangan (opsional)", amtPh: "Nominal", saveBtn: "Simpen Transaksi", updateBtn: "Update Transaksi",
                 listTitle: "Daftar Transaksi", reset: "Reset", thDate: "Tanggal", thType: "Tipe", thCat: "Kategori", thAmount: "Nominal", thAction: "Aksi",
                 emptyTx: "Durung ana transaksi.",
                 bulanan: "Rekap Sasi", bulananDesc: "Ringkesan transaksi saben sasi", mBal: "Saldo",
@@ -387,7 +400,8 @@
                 subtitle: "Keuangan Pintar & Praktis",
                 harian: "Rekap Harian", harianDesc: "Polahkeun catetan poéan anjeun",
                 inc: "Pasukan", exp: "Pangeluaran", bal: "Sésa Saldo",
-                addTitle: "Tambah Transaksi", editTitle: "Édit Transaksi", descPh: "Katerangan (opsional)", amtPh: "Nominal", saveBtn: "Simpen Transaksi", updateBtn: "Update Transaksi",
+                addTitle: "Tambah Transaksi", editTitle: "Édit Transaksi", labelDate: "Tanggal Transaksi",
+                descPh: "Katerangan (opsional)", amtPh: "Nominal", saveBtn: "Simpen Transaksi", updateBtn: "Update Transaksi",
                 listTitle: "Daptar Transaksi", reset: "Reset", thDate: "Tanggal", thType: "Tipe", thCat: "Kategori", thAmount: "Nominal", thAction: "Aksi",
                 emptyTx: "Tacan aya transaksi.",
                 bulanan: "Rekap Bulanan", bulananDesc: "Ringkesan transaksi bulanan", mBal: "Saldo",
@@ -406,8 +420,10 @@
             }
         };
 
-        document.getElementById('filterDate').value = new Date().toISOString().split('T')[0];
-        document.getElementById('filterMonth').value = new Date().toISOString().slice(0, 7);
+        const todayStr = new Date().toISOString().split('T')[0];
+        document.getElementById('filterDate').value = todayStr;
+        document.getElementById('txDate').value = todayStr;
+        document.getElementById('filterMonth').value = todayStr.slice(0, 7);
         
         const yearSelect = document.getElementById('filterYear');
         const currentYear = new Date().getFullYear();
@@ -438,6 +454,7 @@
             document.getElementById('txt-inc-label').textContent = t.inc;
             document.getElementById('txt-exp-label').textContent = t.exp;
             document.getElementById('txt-bal-label').textContent = t.bal;
+            document.getElementById('txt-label-date').textContent = t.labelDate;
             
             const formTitleKey = editingId === null ? t.addTitle : t.editTitle;
             document.getElementById('txt-add-title').innerHTML = `<i class="fa-solid fa-plus-circle text-blue-600"></i> ${formTitleKey}`;
@@ -448,6 +465,14 @@
             const btnTextKey = editingId === null ? t.saveBtn : t.updateBtn;
             document.getElementById('txt-save-btn').innerHTML = `<i class="fa-solid fa-save"></i> ${btnTextKey}`;
             
+            const cancelBtn = document.getElementById('cancelEditBtn');
+            if (editingId !== null) {
+                cancelBtn.classList.remove('hidden');
+                cancelBtn.textContent = lang === 'en' ? 'Cancel' : (lang === 'jv' ? 'Batal' : (lang === 'su' ? 'Batal' : 'Batal'));
+            } else {
+                cancelBtn.classList.add('hidden');
+            }
+
             document.getElementById('txt-list-title').textContent = t.listTitle;
             document.getElementById('txt-reset-btn').innerHTML = `<i class="fa-solid fa-trash-can mr-1"></i> ${t.reset}`;
             document.getElementById('txt-th-date').textContent = t.thDate;
@@ -507,6 +532,7 @@
         function updateCategoryOptions() {
             const type = document.getElementById('txType').value;
             const categorySelect = document.getElementById('txCategory');
+            const currentSelected = categorySelect.value;
             categorySelect.innerHTML = '';
 
             const t = dict[lang];
@@ -518,6 +544,14 @@
                 opt.textContent = cat;
                 categorySelect.appendChild(opt);
             });
+
+            if (currentSelected && !categories.includes(currentSelected)) {
+                let opt = document.createElement('option');
+                opt.value = currentSelected;
+                opt.textContent = currentSelected;
+                categorySelect.appendChild(opt);
+                categorySelect.value = currentSelected;
+            }
         }
 
         function formatMoney(amount) {
@@ -566,7 +600,7 @@
             const category = document.getElementById('txCategory').value;
             const desc = document.getElementById('txDesc').value.trim();
             const amount = parseFloat(document.getElementById('txt-amount-placeholder').value);
-            const date = document.getElementById('filterDate').value;
+            const date = document.getElementById('txDate').value;
 
             if (editingId !== null) {
                 transactions = transactions.map(t => t.id === editingId ? { ...t, date, type, category, desc, amount } : t);
@@ -578,7 +612,7 @@
             localStorage.setItem('kikap_transactions', JSON.stringify(transactions));
 
             document.getElementById('transactionForm').reset();
-            document.getElementById('filterDate').value = date;
+            document.getElementById('txDate').value = todayStr;
             applyLanguage();
             updateCategoryOptions();
             renderApp();
@@ -588,7 +622,7 @@
             const tx = transactions.find(t => t.id === id);
             if (!tx) return;
             editingId = id;
-            document.getElementById('filterDate').value = tx.date;
+            document.getElementById('txDate').value = tx.date;
             document.getElementById('txType').value = tx.type;
             updateCategoryOptions();
             document.getElementById('txCategory').value = tx.category;
@@ -597,6 +631,14 @@
             
             applyLanguage();
             window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function cancelEdit() {
+            editingId = null;
+            document.getElementById('transactionForm').reset();
+            document.getElementById('txDate').value = todayStr;
+            applyLanguage();
+            updateCategoryOptions();
         }
 
         function deleteTransaction(id) {
