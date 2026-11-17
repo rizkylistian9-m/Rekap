@@ -1,0 +1,21 @@
+{
+  "name": "KI-KAP Aplikasi Keuangan",
+  "short_name": "KI-KAP",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0f172a",
+  "theme_color": "#22c55e",
+  "description": "Aplikasi pembukuan keuangan pribadi harian, bulanan, tahunan, target nabung multi-kategori dan grafik analitik bervariasi.",
+  "icons": [
+    {
+      "src": "https://cdn-icons-png.flaticon.com/512/2830/2830284.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "https://cdn-icons-png.flaticon.com/512/2830/2830284.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
