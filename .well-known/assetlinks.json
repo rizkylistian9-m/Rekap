@@ -1,8 +1,12 @@
-[{
-      "relation": ["delegate_permission/common.handle_all_urls"],
-      "target": {
-        "namespace": "android_app",
-        "package_name": "Rekap.KIKAP",
-        "sha256_cert_fingerprints": ["7E:4C:51:DA:69:76:BD:FD:81:BF:11:C2:27:3A:25:04:CA:9D:0F:0B:44:01:08:C1:E9:83:CC:62:57:12:13:83"]
-      }
-    }]
+‎[
+‎  {
+‎    "relation": ["delegate_permission/common.handle_all_urls"],
+‎    "target": {
+‎      "namespace": "android_app",
+‎      "package_name": "Rekap.KIKAP",
+‎      "sha256_cert_fingerprints": [
+‎        "14:6D:E9:83:C5:73:06:50:D8:EE:B9:95:2F:34:FC:64:16:A0:83:42:E6:1D:BE:A8:8A:04:96:B2:3F:CF:44:E5"
+‎      ]
+‎    }
+‎  }
+‎]
