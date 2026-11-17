@@ -33,7 +33,7 @@
 </head>
 <body class="bg-gray-100 dark:bg-gray-900 text-gray-800 dark:text-gray-100 flex flex-col pb-24 transition-colors duration-200 w-full overflow-x-hidden min-h-screen">
 
-    <!-- Top App Bar dengan Logo & Pengaturan Bahasa -->
+    <!-- Top App Bar dengan Logo & Pengaturan Bahasa Global -->
     <header class="bg-white dark:bg-gray-800 border-b dark:border-gray-700 px-3 py-2.5 sticky top-0 z-40 flex items-center justify-between shadow-sm w-full">
         <div class="flex items-center gap-2">
             <div class="w-8 h-8 rounded-full bg-gradient-to-tr from-blue-600 to-sky-400 flex items-center justify-center text-white shadow-sm border border-blue-200 dark:border-blue-800 flex-shrink-0">
@@ -45,12 +45,16 @@
             </div>
         </div>
         <div class="flex items-center gap-1">
-            <!-- Pilihan Bahasa -->
+            <!-- Pilihan Bahasa Diperluas -->
             <select id="langSelect" onchange="changeLanguage()" class="bg-gray-100 dark:bg-gray-700 border dark:border-gray-600 rounded-lg px-1.5 py-1 text-[10px] font-medium focus:outline-none">
                 <option value="id">ID</option>
                 <option value="en">EN</option>
                 <option value="jv">JW</option>
                 <option value="su">SU</option>
+                <option value="ms">MS</option>
+                <option value="es">ES</option>
+                <option value="zh">ZH</option>
+                <option value="ar">AR</option>
             </select>
             <!-- Pilihan Mata Uang -->
             <select id="currencySelect" onchange="changeCurrency()" class="bg-gray-100 dark:bg-gray-700 border dark:border-gray-600 rounded-lg px-1.5 py-1 text-[10px] font-medium focus:outline-none">
@@ -316,7 +320,7 @@
         </button>
     </nav>
 
-    <!-- JavaScript Logika Aplikasi -->
+    <!-- JavaScript Logika Aplikasi dengan Dukungan 8 Bahasa -->
     <script>
         let transactions = JSON.parse(localStorage.getItem('kikap_transactions')) || [];
         let currency = localStorage.getItem('kikap_currency') || 'IDR';
@@ -417,6 +421,94 @@
                 optIn: ["Gaji", "Bonus", "Jualan", "Investasi", "Hadiah / THR", "Lianna"],
                 optOut: ["Dahar & Inum", "Transportasi", "Balanja", "Tagihan", "Hiburan", "Kasehatan", "Pendidikan", "Lianna"],
                 confReset: "Reset sadaya data transaksi?"
+            },
+            ms: {
+                subtitle: "Kewangan Pintar & Praktikal",
+                harian: "Rekod Harian", harianDesc: "Uruskan nota harian anda",
+                inc: "Pendapatan", exp: "Perbelanjaan", bal: "Baki Saldo",
+                addTitle: "Tambah Transaksi", editTitle: "Sunting Transaksi", labelDate: "Tarikh Transaksi",
+                descPh: "Keterangan (pilihan)", amtPh: "Jumlah", saveBtn: "Simpan Transaksi", updateBtn: "Kemaskini Transaksi",
+                listTitle: "Senarai Transaksi", reset: "Reset", thDate: "Tarikh", thType: "Jenis", thCat: "Kategori", thAmount: "Jumlah", thAction: "Tindakan",
+                emptyTx: "Tiada transaksi lagi.",
+                bulanan: "Rekod Bulanan", bulananDesc: "Ringkasan transaksi bulanan", mBal: "Baki",
+                mIncCat: "Kategori Pendapatan", mExpCat: "Kategori Perbelanjaan", emptyInc: "Tiada pendapatan lagi.", emptyExp: "Tiada perbelanjaan lagi.",
+                tahunan: "Rekod Tahunan", tahunanDesc: "Analisis kewangan tahunan", yDetail: "Pecahan Bulanan",
+                thMonth: "Bulan", thIn: "Masuk", thOut: "Keluar", thNet: "Baki",
+                target: "Matlamat Simpanan", targetDesc: "Uruskan impian simpanan anda", addTarget: "Tambah Matlamat Baru",
+                goalNamePh: "Nama Matlamat (Cth: Beli Laptop)", goalAmtPh: "Jumlah Sasaran", createGoalBtn: "Bina Matlamat",
+                emptyGoal: "Tiada matlamat simpanan lagi.", tercapai: "Tercapai",
+                grafik: "Carta Analisis", grafikDesc: "Visualisasikan data kewangan anda",
+                c1: "Pendapatan vs Perbelanjaan", c2: "Jumlah Perbelanjaan mengikut Kategori", c3: "Jumlah Pendapatan mengikut Kategori",
+                navHarian: "Harian", navBulanan: "Bulanan", navTahunan: "Tahunan", navTarget: "Matlamat", navGrafik: "Carta",
+                optIn: ["Gaji", "Bonus", "Jualan", "Pelaburan", "Hadiah / THR", "Lain-lain"],
+                optOut: ["Makanan & Minuman", "Pengangkutan", "Belanja", "Bil", "Hiburan", "Kesihatan", "Pendidikan", "Lain-lain"],
+                confReset: "Reset semua data transaksi?"
+            },
+            es: {
+                subtitle: "Finanzas Inteligentes y Prácticas",
+                harian: "Resumen Diario", harianDesc: "Gestiona tus notas diarias",
+                inc: "Ingresos", exp: "Gastos", bal: "Saldo Restante",
+                addTitle: "Añadir Transacción", editTitle: "Editar Transacción", labelDate: "Fecha de Transacción",
+                descPh: "Descripción (opcional)", amtPh: "Monto", saveBtn: "Guardar Transacción", updateBtn: "Actualizar Transacción",
+                listTitle: "Lista de Transacciones", reset: "Reiniciar", thDate: "Fecha", thType: "Tipo", thCat: "Categoría", thAmount: "Monto", thAction: "Acción",
+                emptyTx: "No hay transacciones aún.",
+                bulanan: "Resumen Mensual", bulananDesc: "Resumen de transacciones mensuales", mBal: "Saldo",
+                mIncCat: "Categorías de Ingresos", mExpCat: "Categorías de Gastos", emptyInc: "No hay ingresos aún.", emptyExp: "No hay gastos aún.",
+                tahunan: "Resumen Anual", tahunanDesc: "Análisis financiero anual", yDetail: "Desglose Mensual",
+                thMonth: "Mes", thIn: "Entrada", thOut: "Salida", thNet: "Saldo",
+                target: "Metas de Ahorro", targetDesc: "Gestiona tus sueños de ahorro", addTarget: "Añadir Nueva Meta",
+                goalNamePh: "Nombre de la Meta (Ej: Comprar Laptop)", goalAmtPh: "Monto Objetivo", createGoalBtn: "Crear Meta",
+                emptyGoal: "No hay metas de ahorro aún.", tercapai: "Logrado",
+                grafik: "Gráficos Analíticos", grafikDesc: "Visualiza tus datos financieros",
+                c1: "Ingresos vs Gastos", c2: "Volumen de Gastos por Categoría", c3: "Volumen de Ingresos por Categoría",
+                navHarian: "Diario", navBulanan: "Mensual", navTahunan: "Anual", navTarget: "Metas", navGrafik: "Gráficos",
+                optIn: ["Salario", "Bonus", "Ventas", "Inversión", "Regalo / THR", "Otros"],
+                optOut: ["Comida y Bebida", "Transporte", "Compras", "Facturas", "Entretenimiento", "Salud", "Educación", "Otros"],
+                confReset: "¿Reiniciar todos los datos de transacciones?"
+            },
+            zh: {
+                subtitle: "智能与实用财务",
+                harian: "每日摘要", harianDesc: "管理您的日常记账",
+                inc: "收入", exp: "支出", bal: "剩余余额",
+                addTitle: "添加交易", editTitle: "编辑交易", labelDate: "交易日期",
+                descPh: "备注（可选）", amtPh: "金额", saveBtn: "保存交易", updateBtn: "更新交易",
+                listTitle: "交易列表", reset: "重置", thDate: "日期", thType: "类型", thCat: "分类", thAmount: "金额", thAction: "操作",
+                emptyTx: "暂无交易。",
+                bulanan: "每月摘要", bulananDesc: "每月交易汇总", mBal: "余额",
+                mIncCat: "收入分类", mExpCat: "支出分类", emptyInc: "暂无收入。", emptyExp: "暂无支出。",
+                tahunan: "年度摘要", tahunanDesc: "年度财务分析", yDetail: "每月明细",
+                thMonth: "月份", thIn: "收入", thOut: "支出", thNet: "余额",
+                target: "储蓄目标", targetDesc: "管理您的储蓄梦想", addTarget: "添加新目标",
+                goalNamePh: "目标名称（例：买电脑）", goalAmtPh: "目标金额", createGoalBtn: "创建目标",
+                emptyGoal: "暂无储蓄目标。", tercapai: "已达成",
+                grafik: "分析图表", grafikDesc: "可视化您的财务数据",
+                c1: "收入对比支出", c2: "各分类支出金额", c3: "各分类收入金额",
+                navHarian: "每日", navBulanan: "每月", navTahunan: "年度", navTarget: "目标", navGrafik: "图表",
+                optIn: ["薪资", "奖金", "销售", "投资", "礼金 / 节日津贴", "其他"],
+                optOut: ["餐饮", "交通", "购物", "账单", "娱乐", "健康", "教育", "其他"],
+                confReset: "确定重置所有交易数据吗？"
+            },
+            ar: {
+                subtitle: "مالية ذكية وواضحة",
+                harian: "الملخص اليومي", harianDesc: "إدارة ملاحظاتك اليومية",
+                inc: "الدخل", exp: "المصروفات", bal: "الرصيد المتبقي",
+                addTitle: "إضافة معاملة", editTitle: "تعديل المعاملة", labelDate: "تاريخ المعاملة",
+                descPh: "الوصف (اختياري)", amtPh: "المبلغ", saveBtn: "حفظ المعاملة", updateBtn: "تحديث المعاملة",
+                listTitle: "قائمة المعاملات", reset: "إعادة ضبط", thDate: "التاريخ", thType: "النوع", thCat: "الفئة", thAmount: "المبلغ", thAction: "الإجراء",
+                emptyTx: "لا توجد معاملات حتى الآن.",
+                bulanan: "الملخص الشهري", bulananDesc: "ملخص المعاملات الشهرية", mBal: "الرصيد",
+                mIncCat: "فئات الدخل", mExpCat: "فئات المصروفات", emptyInc: "لا يوجد دخل بعد.", emptyExp: "لا توجد مصروفات بعد.",
+                tahunan: "الملخص السنوي", tahunanDesc: "التحليل المالي السنوي", yDetail: "التفصيل الشهري",
+                thMonth: "الشهر", thIn: "وارد", thOut: "صادر", thNet: "الرصيد",
+                target: "أهداف الادخار", targetDesc: "إدارة أحلامك الادخارية", addTarget: "إضافة هدف جديد",
+                goalNamePh: "اسم الهدف (مثل: شراء حاسوب)", goalAmtPh: "المبلغ المستهدف", createGoalBtn: "إنشاء الهدف",
+                emptyGoal: "لا توجد أهداف ادخار بعد.", tercapai: "متحقق",
+                grafik: "الرسوم البيانية", grafikDesc: "تصور بياناتك المالية",
+                c1: "الدخل مقابل المصروفات", c2: "حجم المصروفات حسب الفئة", c3: "حجم الدخل حسب الفئة",
+                navHarian: "اليومي", navBulanan: "الشهري", navTahunan: "السنوي", navTarget: "الأهداف", navGrafik: "الرسوم",
+                optIn: ["الراتب", "مكافأة", "مبيعات", "استثمار", "هدية / عيدية", "أخرى"],
+                optOut: ["طعام وشراب", "مواصلات", "تسوق", "فواتير", "ترفيه", "صحة", "تعليم", "أخرى"],
+                confReset: "هل تريد إعادة ضبط جميع بيانات المعاملات؟"
             }
         };
 
@@ -447,7 +539,7 @@
         }
 
         function applyLanguage() {
-            const t = dict[lang];
+            const t = dict[lang] || dict['id'];
             document.getElementById('txt-subtitle').textContent = t.subtitle;
             document.getElementById('txt-harian-title').textContent = t.harian;
             document.getElementById('txt-harian-desc').textContent = t.harianDesc;
@@ -468,7 +560,7 @@
             const cancelBtn = document.getElementById('cancelEditBtn');
             if (editingId !== null) {
                 cancelBtn.classList.remove('hidden');
-                cancelBtn.textContent = lang === 'en' ? 'Cancel' : (lang === 'jv' ? 'Batal' : (lang === 'su' ? 'Batal' : 'Batal'));
+                cancelBtn.textContent = lang === 'en' ? 'Cancel' : (lang === 'zh' ? '取消' : (lang === 'ar' ? 'إلغاء' : 'Batal'));
             } else {
                 cancelBtn.classList.add('hidden');
             }
@@ -535,7 +627,7 @@
             const currentSelected = categorySelect.value;
             categorySelect.innerHTML = '';
 
-            const t = dict[lang];
+            const t = dict[lang] || dict['id'];
             let categories = type === 'Pemasukan' ? t.optIn : t.optOut;
 
             categories.forEach(cat => {
@@ -619,6 +711,11 @@
         }
 
         function editTransaction(id) {
+            if (editingId === id) {
+                cancelEdit();
+                return;
+            }
+
             const tx = transactions.find(t => t.id === id);
             if (!tx) return;
             editingId = id;
@@ -648,7 +745,7 @@
         }
 
         function resetData() {
-            const t = dict[lang];
+            const t = dict[lang] || dict['id'];
             if(confirm(t.confReset)) {
                 transactions = [];
                 localStorage.removeItem('kikap_transactions');
@@ -677,7 +774,7 @@
         }
 
         function renderApp() {
-            const t = dict[lang];
+            const t = dict[lang] || dict['id'];
             const selectedDate = document.getElementById('filterDate').value;
             const dailyTxs = transactions.filter(t_item => t_item.date === selectedDate);
             
