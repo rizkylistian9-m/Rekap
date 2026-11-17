@@ -1,8 +1,0 @@
-[{
-      "relation": ["delegate_permission/common.handle_all_urls"],
-      "target": {
-        "namespace": "android_app",
-        "package_name": "KIKAP.ID",
-        "sha256_cert_fingerprints": ["B7:D3:E5:11:A3:D1:D1:27:6A:AF:99:41:B1:F5:74:E6:F9:12:6A:85:80:CF:5B:63:CC:F2:8F:CA:75:FA:FA:EB"]
-      }
-    }]
