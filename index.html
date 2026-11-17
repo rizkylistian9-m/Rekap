@@ -64,7 +64,10 @@
                 </button>
             </form>
 
-            <div class="text-center pt-2">
+            <div class="flex items-center justify-between pt-1">
+                <button type="button" onclick="handleForgotPassword()" class="text-[11px] text-blue-600 dark:text-blue-400 hover:underline">
+                    Lupa password?
+                </button>
                 <button type="button" onclick="toggleAuthMode()" id="authSwitchBtn" class="text-[11px] text-blue-600 dark:text-blue-400 hover:underline">
                     Belum punya akun? Daftar di sini
                 </button>
@@ -314,7 +317,7 @@
         </div>
     </main>
 
-    <!-- Bottom Navigation Bar (Diberi id="bottomNav") -->
+    <!-- Bottom Navigation Bar -->
     <nav id="bottomNav" class="fixed bottom-0 inset-x-0 bg-white dark:bg-gray-800 border-t dark:border-gray-700 flex justify-around py-2 z-50 shadow-lg w-full hidden">
         <button onclick="switchTab('harian')" class="nav-btn flex flex-col items-center py-1 px-3 text-gray-400 transition-colors" data-tab="harian">
             <i class="fa-solid fa-calendar-day text-sm"></i>
@@ -531,7 +534,7 @@
                 emptyTx: "لا توجد معاملات حتى الآن.",
                 bulanan: "الملخص الشهري", bulananDesc: "ملخص المعاملات الشهرية", mBal: "الرصيد",
                 mIncCat: "فئات الدخل", mExpCat: "فئات المصروفات", emptyInc: "لا يوجد دخل بعد.", emptyExp: "لا توجد مصروفات بعد.",
-                tahunan: "الملخص السنوي", tahunanDesc: "التحليل المالي السنوي", yDetail: "التفصيل الشهري",
+                tahunan: "الملخص السنوي", tahunanDesc: "Analisis keuangan tahunan", yDetail: "التفصيل الشهري",
                 thMonth: "الشهر", thIn: "وارد", thOut: "صادر", thNet: "الرصيد",
                 target: "أهداف الادخار", targetDesc: "إدارة أحلامك الادخارية", addTarget: "إضافة هدف جديد",
                 goalNamePh: "اسم الهدف (مثل: شراء حاسوب)", goalAmtPh: "المبلغ المستهدف", createGoalBtn: "إنشاء الهدف",
@@ -550,11 +553,11 @@
             const bottomNav = document.getElementById('bottomNav');
             if (user) {
                 authScreen.classList.add('hidden');
-                bottomNav.classList.remove('hidden'); // Tampilkan navbar bawah saat sudah login
+                bottomNav.classList.remove('hidden');
                 loadUserData(user.uid);
             } else {
                 authScreen.classList.remove('hidden');
-                bottomNav.classList.add('hidden'); // Sembunyikan navbar bawah saat di halaman login
+                bottomNav.classList.add('hidden');
             }
         });
 
@@ -587,6 +590,31 @@
                 errBox.textContent = error.message;
                 errBox.classList.remove('hidden');
             });
+        }
+
+        // Fungsi Baru: Menangani Lupa Password
+        function handleForgotPassword() {
+            const email = document.getElementById('authEmail').value.trim();
+            const errBox = document.getElementById('authError');
+            errBox.classList.add('hidden');
+
+            if (!email) {
+                errBox.textContent = "Masukkan email kamu terlebih dahulu di kolom Email di atas.";
+                errBox.classList.remove('hidden');
+                return;
+            }
+
+            auth.sendPasswordResetEmail(email)
+                .then(() => {
+                    errBox.className = "bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400 text-xs p-2.5 rounded-xl";
+                    errBox.textContent = "Link pemulihan password telah dikirim ke email " + email + ". Cek inbox atau folder spam.";
+                    errBox.classList.remove('hidden');
+                })
+                .catch((error) => {
+                    errBox.className = "bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400 text-xs p-2.5 rounded-xl";
+                    errBox.textContent = "Gagal: " + error.message;
+                    errBox.classList.remove('hidden');
+                });
         }
 
         function logoutUser() {
