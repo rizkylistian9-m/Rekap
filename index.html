@@ -33,27 +33,38 @@
 </head>
 <body class="bg-gray-100 dark:bg-gray-900 text-gray-800 dark:text-gray-100 flex flex-col pb-24 transition-colors duration-200 w-full overflow-x-hidden min-h-screen">
 
-    <!-- Top App Bar dengan Ikon Logo Profesional -->
-    <header class="bg-white dark:bg-gray-800 border-b dark:border-gray-700 px-4 py-2.5 sticky top-0 z-40 flex items-center justify-between shadow-sm w-full">
-        <div class="flex items-center gap-2.5">
-            <div class="w-8 h-8 rounded-full bg-gradient-to-tr from-blue-600 to-sky-400 flex items-center justify-center text-white shadow-sm border border-blue-200 dark:border-blue-800">
+    <!-- Top App Bar dengan Logo & Pengaturan Bahasa -->
+    <header class="bg-white dark:bg-gray-800 border-b dark:border-gray-700 px-3 py-2.5 sticky top-0 z-40 flex items-center justify-between shadow-sm w-full">
+        <div class="flex items-center gap-2">
+            <div class="w-8 h-8 rounded-full bg-gradient-to-tr from-blue-600 to-sky-400 flex items-center justify-center text-white shadow-sm border border-blue-200 dark:border-blue-800 flex-shrink-0">
                 <i class="fa-solid fa-wallet text-xs"></i>
             </div>
             <div>
                 <h1 class="font-bold text-sm text-blue-600 dark:text-blue-400 leading-tight">KI-KAP</h1>
-                <p class="text-[9px] text-gray-400">Keuangan Pintar & Praktis</p>
+                <p id="txt-subtitle" class="text-[9px] text-gray-400">Keuangan Pintar & Praktis</p>
             </div>
         </div>
-        <div class="flex items-center gap-1.5">
-            <select id="currencySelect" onchange="changeCurrency()" class="bg-gray-100 dark:bg-gray-700 border dark:border-gray-600 rounded-lg px-2 py-1 text-[11px] font-medium focus:outline-none">
-                <option value="IDR">IDR (Rp)</option>
-                <option value="USD">USD ($)</option>
-                <option value="EUR">EUR (€)</option>
-                <option value="SGD">SGD (S$)</option>
-                <option value="JPY">JPY (¥)</option>
-                <option value="MYR">MYR (RM)</option>
+        <div class="flex items-center gap-1">
+            <!-- Pilihan Bahasa -->
+            <select id="langSelect" onchange="changeLanguage()" class="bg-gray-100 dark:bg-gray-700 border dark:border-gray-600 rounded-lg px-1.5 py-1 text-[10px] font-medium focus:outline-none">
+                <option value="id">ID</option>
+                <option value="en">EN</option>
+                <option value="jv">JW</option>
+                <option value="su">SU</option>
             </select>
-            <button onclick="toggleDarkMode()" class="bg-gray-100 dark:bg-gray-700 p-1.5 rounded-lg text-xs w-7 h-7 flex items-center justify-center">
+            <!-- Pilihan Mata Uang -->
+            <select id="currencySelect" onchange="changeCurrency()" class="bg-gray-100 dark:bg-gray-700 border dark:border-gray-600 rounded-lg px-1.5 py-1 text-[10px] font-medium focus:outline-none">
+                <option value="IDR">IDR</option>
+                <option value="USD">USD</option>
+                <option value="EUR">EUR</option>
+                <option value="SGD">SGD</option>
+                <option value="JPY">JPY</option>
+                <option value="MYR">MYR</option>
+                <option value="GBP">GBP</option>
+                <option value="SAR">SAR</option>
+            </select>
+            <!-- Dark Mode Toggle -->
+            <button onclick="toggleDarkMode()" class="bg-gray-100 dark:bg-gray-700 p-1 rounded-lg text-xs w-7 h-7 flex items-center justify-center flex-shrink-0">
                 <i id="modeIconClass" class="fa-solid fa-sun text-xs"></i>
             </button>
         </div>
@@ -66,30 +77,30 @@
         <div id="content-harian" class="tab-content space-y-3 w-full">
             <div class="flex items-center justify-between w-full bg-white dark:bg-gray-800 p-3 rounded-2xl shadow-sm border dark:border-gray-700">
                 <div>
-                    <h2 class="text-base font-bold">Rekap Harian</h2>
-                    <p class="text-[11px] text-gray-400">Kelola catatan harianmu</p>
+                    <h2 id="txt-harian-title" class="text-base font-bold">Rekap Harian</h2>
+                    <p id="txt-harian-desc" class="text-[11px] text-gray-400">Kelola catatan harianmu</p>
                 </div>
                 <input type="date" id="filterDate" onchange="renderApp()" class="bg-gray-50 dark:bg-gray-700 border dark:border-gray-600 px-2.5 py-1 rounded-xl text-xs shadow-sm focus:outline-none">
             </div>
 
             <div class="grid grid-cols-3 gap-2 w-full">
                 <div class="bg-white dark:bg-gray-800 p-3 rounded-2xl shadow-sm border dark:border-gray-700">
-                    <p class="text-[9px] text-gray-400 font-bold uppercase">Pemasukan</p>
+                    <p id="txt-inc-label" class="text-[9px] text-gray-400 font-bold uppercase">Pemasukan</p>
                     <h3 id="dailyIncome" class="text-xs font-bold text-blue-600 mt-0.5 truncate">0</h3>
                 </div>
                 <div class="bg-white dark:bg-gray-800 p-3 rounded-2xl shadow-sm border dark:border-gray-700">
-                    <p class="text-[9px] text-gray-400 font-bold uppercase">Pengeluaran</p>
+                    <p id="txt-exp-label" class="text-[9px] text-gray-400 font-bold uppercase">Pengeluaran</p>
                     <h3 id="dailyExpense" class="text-xs font-bold text-red-500 mt-0.5 truncate">0</h3>
                 </div>
                 <div class="bg-white dark:bg-gray-800 p-3 rounded-2xl shadow-sm border dark:border-gray-700">
-                    <p class="text-[9px] text-gray-400 font-bold uppercase">Sisa Saldo</p>
+                    <p id="txt-bal-label" class="text-[9px] text-gray-400 font-bold uppercase">Sisa Saldo</p>
                     <h3 id="dailyBalance" class="text-xs font-bold text-emerald-600 mt-0.5 truncate">0</h3>
                 </div>
             </div>
 
             <!-- Form Tambah Transaksi -->
             <div class="bg-white dark:bg-gray-800 p-3.5 rounded-2xl shadow-sm border dark:border-gray-700 space-y-2.5 w-full">
-                <h3 class="font-bold text-xs flex items-center gap-1.5"><i class="fa-solid fa-plus-circle text-blue-600"></i> Tambah Transaksi</h3>
+                <h3 id="txt-add-title" class="font-bold text-xs flex items-center gap-1.5"><i class="fa-solid fa-plus-circle text-blue-600"></i> Tambah Transaksi</h3>
                 <form id="transactionForm" onsubmit="addTransaction(event)" class="space-y-2.5 w-full">
                     <div class="grid grid-cols-2 gap-2 w-full">
                         <select id="txType" onchange="updateCategoryOptions()" class="bg-gray-50 dark:bg-gray-700 border dark:border-gray-600 rounded-xl px-2.5 py-1.5 text-xs focus:ring-2 focus:ring-blue-500 focus:outline-none w-full">
@@ -101,8 +112,8 @@
                         </select>
                     </div>
                     <input type="text" id="txDesc" placeholder="Keterangan (opsional)" class="w-full bg-gray-50 dark:bg-gray-700 border dark:border-gray-600 rounded-xl px-2.5 py-1.5 text-xs focus:ring-2 focus:ring-blue-500 focus:outline-none">
-                    <input type="number" id="txAmount" placeholder="Nominal" required min="1" class="w-full bg-gray-50 dark:bg-gray-700 border dark:border-gray-600 rounded-xl px-2.5 py-1.5 text-xs focus:ring-2 focus:ring-blue-500 focus:outline-none">
-                    <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-xl py-2 text-xs transition-colors shadow-md flex items-center justify-center gap-1.5">
+                    <input type="number" id="txt-amount-placeholder" placeholder="Nominal" required min="1" class="w-full bg-gray-50 dark:bg-gray-700 border dark:border-gray-600 rounded-xl px-2.5 py-1.5 text-xs focus:ring-2 focus:ring-blue-500 focus:outline-none">
+                    <button type="submit" id="txt-save-btn" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-xl py-2 text-xs transition-colors shadow-md flex items-center justify-center gap-1.5">
                         <i class="fa-solid fa-save"></i> Simpan Transaksi
                     </button>
                 </form>
@@ -111,18 +122,18 @@
             <!-- Tabel Transaksi -->
             <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border dark:border-gray-700 overflow-hidden w-full">
                 <div class="p-3 border-b dark:border-gray-700 flex justify-between items-center">
-                    <h3 class="font-bold text-xs">Daftar Transaksi</h3>
-                    <button type="button" onclick="resetData()" class="text-[10px] text-red-500 hover:text-red-700 font-medium px-2 py-0.5 rounded-lg border border-red-200 dark:border-red-900"><i class="fa-solid fa-trash-can mr-1"></i> Reset</button>
+                    <h3 id="txt-list-title" class="font-bold text-xs">Daftar Transaksi</h3>
+                    <button type="button" onclick="resetData()" id="txt-reset-btn" class="text-[10px] text-red-500 hover:text-red-700 font-medium px-2 py-0.5 rounded-lg border border-red-200 dark:border-red-900"><i class="fa-solid fa-trash-can mr-1"></i> Reset</button>
                 </div>
                 <div class="overflow-x-auto w-full">
                     <table class="w-full text-left border-collapse text-xs">
                         <thead>
                             <tr class="bg-gray-50 dark:bg-gray-700/50 text-gray-400 uppercase border-b dark:border-gray-700 text-[10px]">
-                                <th class="p-2">Tanggal</th>
-                                <th class="p-2">Tipe</th>
-                                <th class="p-2">Kategori</th>
-                                <th class="p-2 text-right">Nominal</th>
-                                <th class="p-2 text-center">Aksi</th>
+                                <th id="txt-th-date" class="p-2">Tanggal</th>
+                                <th id="txt-th-type" class="p-2">Tipe</th>
+                                <th id="txt-th-cat" class="p-2">Kategori</th>
+                                <th id="txt-th-amount" class="p-2 text-right">Nominal</th>
+                                <th id="txt-th-action" class="p-2 text-center">Aksi</th>
                             </tr>
                         </thead>
                         <tbody id="transactionTableBody" class="divide-y divide-gray-100 dark:divide-gray-700">
@@ -137,34 +148,34 @@
         <div id="content-bulanan" class="tab-content space-y-3 hidden w-full">
             <div class="flex items-center justify-between w-full bg-white dark:bg-gray-800 p-3 rounded-2xl shadow-sm border dark:border-gray-700">
                 <div>
-                    <h2 class="text-base font-bold">Rekap Bulanan</h2>
-                    <p class="text-[11px] text-gray-400">Ringkasan transaksi bulanan</p>
+                    <h2 id="txt-bulanan-title" class="text-base font-bold">Rekap Bulanan</h2>
+                    <p id="txt-bulanan-desc" class="text-[11px] text-gray-400">Ringkasan transaksi bulanan</p>
                 </div>
                 <input type="month" id="filterMonth" onchange="renderApp()" class="bg-gray-50 dark:bg-gray-700 border dark:border-gray-600 px-2.5 py-1 rounded-xl text-xs shadow-sm focus:outline-none">
             </div>
 
             <div class="grid grid-cols-3 gap-2 w-full">
                 <div class="bg-white dark:bg-gray-800 p-3 rounded-2xl shadow-sm border dark:border-gray-700">
-                    <p class="text-[9px] text-gray-400 font-bold uppercase">Pemasukan</p>
+                    <p id="txt-m-inc" class="text-[9px] text-gray-400 font-bold uppercase">Pemasukan</p>
                     <h3 id="monthlyIncome" class="text-xs font-bold text-blue-600 mt-0.5 truncate">0</h3>
                 </div>
                 <div class="bg-white dark:bg-gray-800 p-3 rounded-2xl shadow-sm border dark:border-gray-700">
-                    <p class="text-[9px] text-gray-400 font-bold uppercase">Pengeluaran</p>
+                    <p id="txt-m-exp" class="text-[9px] text-gray-400 font-bold uppercase">Pengeluaran</p>
                     <h3 id="monthlyExpense" class="text-xs font-bold text-red-500 mt-0.5 truncate">0</h3>
                 </div>
                 <div class="bg-white dark:bg-gray-800 p-3 rounded-2xl shadow-sm border dark:border-gray-700">
-                    <p class="text-[9px] text-gray-400 font-bold uppercase">Saldo</p>
+                    <p id="txt-m-bal" class="text-[9px] text-gray-400 font-bold uppercase">Saldo</p>
                     <h3 id="monthlyBalance" class="text-xs font-bold text-emerald-600 mt-0.5 truncate">0</h3>
                 </div>
             </div>
 
             <div class="space-y-3 w-full">
                 <div class="bg-white dark:bg-gray-800 p-3.5 rounded-2xl shadow-sm border dark:border-gray-700 space-y-2.5 w-full">
-                    <h3 class="font-bold text-xs text-blue-600 dark:text-blue-400"><i class="fa-solid fa-arrow-trend-up mr-1"></i> Kategori Pemasukan</h3>
+                    <h3 id="txt-m-inc-cat" class="font-bold text-xs text-blue-600 dark:text-blue-400"><i class="fa-solid fa-arrow-trend-up mr-1"></i> Kategori Pemasukan</h3>
                     <div id="monthlyIncomeCategoryVolume" class="space-y-2"></div>
                 </div>
                 <div class="bg-white dark:bg-gray-800 p-3.5 rounded-2xl shadow-sm border dark:border-gray-700 space-y-2.5 w-full">
-                    <h3 class="font-bold text-xs text-red-600 dark:text-red-400"><i class="fa-solid fa-arrow-trend-down mr-1"></i> Kategori Pengeluaran</h3>
+                    <h3 id="txt-m-exp-cat" class="font-bold text-xs text-red-600 dark:text-red-400"><i class="fa-solid fa-arrow-trend-down mr-1"></i> Kategori Pengeluaran</h3>
                     <div id="monthlyExpenseCategoryVolume" class="space-y-2"></div>
                 </div>
             </div>
@@ -174,8 +185,8 @@
         <div id="content-tahunan" class="tab-content space-y-3 hidden w-full">
             <div class="flex items-center justify-between w-full bg-white dark:bg-gray-800 p-3 rounded-2xl shadow-sm border dark:border-gray-700">
                 <div>
-                    <h2 class="text-base font-bold">Rekap Tahunan</h2>
-                    <p class="text-[11px] text-gray-400">Analisis keuangan tahunan</p>
+                    <h2 id="txt-tahunan-title" class="text-base font-bold">Rekap Tahunan</h2>
+                    <p id="txt-tahunan-desc" class="text-[11px] text-gray-400">Analisis keuangan tahunan</p>
                 </div>
                 <select id="filterYear" onchange="renderApp()" class="bg-gray-50 dark:bg-gray-700 border dark:border-gray-600 px-2.5 py-1 rounded-xl text-xs shadow-sm focus:outline-none">
                     <!-- Diisi JS -->
@@ -184,29 +195,29 @@
 
             <div class="grid grid-cols-3 gap-2 w-full">
                 <div class="bg-white dark:bg-gray-800 p-3 rounded-2xl shadow-sm border dark:border-gray-700">
-                    <p class="text-[9px] text-gray-400 font-bold uppercase">Pemasukan</p>
+                    <p id="txt-y-inc" class="text-[9px] text-gray-400 font-bold uppercase">Pemasukan</p>
                     <h3 id="yearlyIncome" class="text-xs font-bold text-blue-600 mt-0.5 truncate">0</h3>
                 </div>
                 <div class="bg-white dark:bg-gray-800 p-3 rounded-2xl shadow-sm border dark:border-gray-700">
-                    <p class="text-[9px] text-gray-400 font-bold uppercase">Pengeluaran</p>
+                    <p id="txt-y-exp" class="text-[9px] text-gray-400 font-bold uppercase">Pengeluaran</p>
                     <h3 id="yearlyExpense" class="text-xs font-bold text-red-500 mt-0.5 truncate">0</h3>
                 </div>
                 <div class="bg-white dark:bg-gray-800 p-3 rounded-2xl shadow-sm border dark:border-gray-700">
-                    <p class="text-[9px] text-gray-400 font-bold uppercase">Saldo</p>
+                    <p id="txt-y-bal" class="text-[9px] text-gray-400 font-bold uppercase">Saldo</p>
                     <h3 id="yearlyBalance" class="text-xs font-bold text-emerald-600 mt-0.5 truncate">0</h3>
                 </div>
             </div>
 
             <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border dark:border-gray-700 overflow-hidden w-full">
-                <div class="p-3 border-b dark:border-gray-700"><h3 class="font-bold text-xs">Rincian Per Bulan</h3></div>
+                <div class="p-3 border-b dark:border-gray-700"><h3 id="txt-y-detail" class="font-bold text-xs">Rincian Per Bulan</h3></div>
                 <div class="overflow-x-auto w-full">
                     <table class="w-full text-left border-collapse text-xs">
                         <thead>
                             <tr class="bg-gray-50 dark:bg-gray-700/50 text-gray-400 uppercase border-b dark:border-gray-700 text-[10px]">
-                                <th class="p-2">Bulan</th>
-                                <th class="p-2 text-right">Masuk</th>
-                                <th class="p-2 text-right">Keluar</th>
-                                <th class="p-2 text-right">Saldo</th>
+                                <th id="txt-th-month" class="p-2">Bulan</th>
+                                <th id="txt-th-in" class="p-2 text-right">Masuk</th>
+                                <th id="txt-th-out" class="p-2 text-right">Keluar</th>
+                                <th id="txt-th-net" class="p-2 text-right">Saldo</th>
                             </tr>
                         </thead>
                         <tbody id="yearlyTableBody" class="divide-y divide-gray-100 dark:divide-gray-700">
@@ -220,16 +231,16 @@
         <!-- 4. Tab: Target Nabung -->
         <div id="content-target" class="tab-content space-y-3 hidden w-full">
             <div class="bg-white dark:bg-gray-800 p-3 rounded-2xl shadow-sm border dark:border-gray-700">
-                <h2 class="text-base font-bold">Target Nabung</h2>
-                <p class="text-[11px] text-gray-400">Kelola impian tabunganmu</p>
+                <h2 id="txt-target-title" class="text-base font-bold">Target Nabung</h2>
+                <p id="txt-target-desc" class="text-[11px] text-gray-400">Kelola impian tabunganmu</p>
             </div>
 
             <div class="bg-white dark:bg-gray-800 p-3.5 rounded-2xl shadow-sm border dark:border-gray-700 space-y-2.5 w-full">
-                <h3 class="font-bold text-xs flex items-center gap-1.5"><i class="fa-solid fa-plus-circle text-blue-600"></i> Tambah Target Baru</h3>
+                <h3 id="txt-add-target-title" class="font-bold text-xs flex items-center gap-1.5"><i class="fa-solid fa-plus-circle text-blue-600"></i> Tambah Target Baru</h3>
                 <form id="goalForm" onsubmit="addSavingsGoal(event)" class="space-y-2.5 w-full">
-                    <input type="text" id="newGoalName" placeholder="Nama Impian (Cth: Beli Laptop)" required class="w-full bg-gray-50 dark:bg-gray-700 border dark:border-gray-600 rounded-xl px-2.5 py-1.5 text-xs focus:ring-2 focus:ring-blue-500 focus:outline-none">
-                    <input type="number" id="newGoalAmount" placeholder="Nominal Target" required min="1" class="w-full bg-gray-50 dark:bg-gray-700 border dark:border-gray-600 rounded-xl px-2.5 py-1.5 text-xs focus:ring-2 focus:ring-blue-500 focus:outline-none">
-                    <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-xl py-2 text-xs transition-colors shadow-md flex items-center justify-center gap-1.5">
+                    <input type="text" id="txt-goal-name-ph" placeholder="Nama Impian (Cth: Beli Laptop)" required class="w-full bg-gray-50 dark:bg-gray-700 border dark:border-gray-600 rounded-xl px-2.5 py-1.5 text-xs focus:ring-2 focus:ring-blue-500 focus:outline-none">
+                    <input type="number" id="txt-goal-amt-ph" placeholder="Nominal Target" required min="1" class="w-full bg-gray-50 dark:bg-gray-700 border dark:border-gray-600 rounded-xl px-2.5 py-1.5 text-xs focus:ring-2 focus:ring-blue-500 focus:outline-none">
+                    <button type="submit" id="txt-create-goal-btn" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-xl py-2 text-xs transition-colors shadow-md flex items-center justify-center gap-1.5">
                         <i class="fa-solid fa-bullseye"></i> Buat Target
                     </button>
                 </form>
@@ -243,25 +254,25 @@
         <!-- 5. Tab: Grafik Analitik -->
         <div id="content-grafik" class="tab-content space-y-3 hidden w-full">
             <div class="bg-white dark:bg-gray-800 p-3 rounded-2xl shadow-sm border dark:border-gray-700">
-                <h2 class="text-base font-bold">Grafik Analitik</h2>
-                <p class="text-[11px] text-gray-400">Visualisasi data keuanganmu</p>
+                <h2 id="txt-grafik-title" class="text-base font-bold">Grafik Analitik</h2>
+                <p id="txt-grafik-desc" class="text-[11px] text-gray-400">Visualisasi data keuanganmu</p>
             </div>
 
             <div class="space-y-3 w-full">
                 <div class="bg-white dark:bg-gray-800 p-3.5 rounded-2xl shadow-sm border dark:border-gray-700 w-full">
-                    <h3 class="font-bold text-xs mb-2 text-gray-600 dark:text-gray-300">Pemasukan vs Pengeluaran</h3>
+                    <h3 id="txt-chart-1" class="font-bold text-xs mb-2 text-gray-600 dark:text-gray-300">Pemasukan vs Pengeluaran</h3>
                     <div class="h-48 relative flex items-center justify-center w-full">
                         <canvas id="chartPieIncExp"></canvas>
                     </div>
                 </div>
                 <div class="bg-white dark:bg-gray-800 p-3.5 rounded-2xl shadow-sm border dark:border-gray-700 w-full">
-                    <h3 class="font-bold text-xs mb-2 text-red-500">Volume Pengeluaran per Kategori</h3>
+                    <h3 id="txt-chart-2" class="font-bold text-xs mb-2 text-red-500">Volume Pengeluaran per Kategori</h3>
                     <div class="h-48 relative flex items-center justify-center w-full">
                         <canvas id="chartBarExpCat"></canvas>
                     </div>
                 </div>
                 <div class="bg-white dark:bg-gray-800 p-3.5 rounded-2xl shadow-sm border dark:border-gray-700 w-full">
-                    <h3 class="font-bold text-xs mb-2 text-blue-600">Volume Pemasukan per Kategori</h3>
+                    <h3 id="txt-chart-3" class="font-bold text-xs mb-2 text-blue-600">Volume Pemasukan per Kategori</h3>
                     <div class="h-48 relative flex items-center justify-center w-full">
                         <canvas id="chartBarIncCat"></canvas>
                     </div>
@@ -274,24 +285,24 @@
     <nav class="fixed bottom-0 inset-x-0 bg-white dark:bg-gray-800 border-t dark:border-gray-700 flex justify-around py-2 z-50 shadow-lg w-full">
         <button onclick="switchTab('harian')" class="nav-btn flex flex-col items-center py-1 px-3 text-gray-400 transition-colors" data-tab="harian">
             <i class="fa-solid fa-calendar-day text-sm"></i>
-            <span class="text-[9px] mt-0.5 font-medium">Harian</span>
+            <span id="txt-nav-harian" class="text-[9px] mt-0.5 font-medium">Harian</span>
         </button>
         <button onclick="switchTab('bulanan')" class="nav-btn flex flex-col items-center py-1 px-3 text-gray-400 transition-colors" data-tab="bulanan">
             <i class="fa-solid fa-calendar-alt text-sm"></i>
-            <span class="text-[9px] mt-0.5 font-medium">Bulanan</span>
+            <span id="txt-nav-bulanan" class="text-[9px] mt-0.5 font-medium">Bulanan</span>
         </button>
         <button onclick="switchTab('tahunan')" class="nav-btn flex flex-col items-center py-1 px-3 text-gray-400 transition-colors" data-tab="tahunan">
             <i class="fa-solid fa-calendar text-sm"></i>
-            <span class="text-[9px] mt-0.5 font-medium">Tahunan</span>
+            <span id="txt-nav-tahunan" class="text-[9px] mt-0.5 font-medium">Tahunan</span>
         </button>
         <button onclick="switchTab('target')" class="nav-btn flex flex-col items-center py-1 px-3 text-gray-400 transition-colors relative" data-tab="target">
             <i class="fa-solid fa-bullseye text-sm"></i>
-            <span class="text-[9px] mt-0.5 font-medium">Target</span>
+            <span id="txt-nav-target" class="text-[9px] mt-0.5 font-medium">Target</span>
             <span id="goalBadge" class="absolute top-0.5 right-2 bg-blue-600 text-white text-[8px] px-1 rounded-full font-bold">0</span>
         </button>
         <button onclick="switchTab('grafik')" class="nav-btn flex flex-col items-center py-1 px-3 text-gray-400 transition-colors" data-tab="grafik">
             <i class="fa-solid fa-chart-pie text-sm"></i>
-            <span class="text-[9px] mt-0.5 font-medium">Grafik</span>
+            <span id="txt-nav-grafik" class="text-[9px] mt-0.5 font-medium">Grafik</span>
         </button>
     </nav>
 
@@ -299,12 +310,100 @@
     <script>
         let transactions = JSON.parse(localStorage.getItem('kikap_transactions')) || [];
         let currency = localStorage.getItem('kikap_currency') || 'IDR';
+        let lang = localStorage.getItem('kikap_lang') || 'id';
         let darkMode = localStorage.getItem('kikap_dark') === 'true';
         let savingsGoals = JSON.parse(localStorage.getItem('kikap_savings_goals')) || [];
 
         let chartIncExpInstance = null;
         let chartExpCatInstance = null;
         let chartIncCatInstance = null;
+
+        const dict = {
+            id: {
+                subtitle: "Keuangan Pintar & Praktis",
+                harian: "Rekap Harian", harianDesc: "Kelola catatan harianmu",
+                inc: "Pemasukan", exp: "Pengeluaran", bal: "Sisa Saldo",
+                addTitle: "Tambah Transaksi", descPh: "Keterangan (opsional)", amtPh: "Nominal", saveBtn: "Simpan Transaksi",
+                listTitle: "Daftar Transaksi", reset: "Reset", thDate: "Tanggal", thType: "Tipe", thCat: "Kategori", thAmount: "Nominal", thAction: "Aksi",
+                emptyTx: "Belum ada transaksi.",
+                bulanan: "Rekap Bulanan", bulananDesc: "Ringkasan transaksi bulanan", mBal: "Saldo",
+                mIncCat: "Kategori Pemasukan", mExpCat: "Kategori Pengeluaran", emptyInc: "Belum ada pemasukan.", emptyExp: "Belum ada pengeluaran.",
+                tahunan: "Rekap Tahunan", tahunanDesc: "Analisis keuangan tahunan", yDetail: "Rincian Per Bulan",
+                thMonth: "Bulan", thIn: "Masuk", thOut: "Keluar", thNet: "Saldo",
+                target: "Target Nabung", targetDesc: "Kelola impian tabunganmu", addTarget: "Tambah Target Baru",
+                goalNamePh: "Nama Impian (Cth: Beli Laptop)", goalAmtPh: "Nominal Target", createGoalBtn: "Buat Target",
+                emptyGoal: "Belum ada target nabung.", tercapai: "Tercapai",
+                grafik: "Grafik Analitik", grafikDesc: "Visualisasi data keuanganmu",
+                c1: "Pemasukan vs Pengeluaran", c2: "Volume Pengeluaran per Kategori", c3: "Volume Pemasukan per Kategori",
+                navHarian: "Harian", navBulanan: "Bulanan", navTahunan: "Tahunan", navTarget: "Target", navGrafik: "Grafik",
+                optIn: ["Gaji", "Bonus", "Penjualan", "Investasi", "Hadiah / THR", "Lainnya"],
+                optOut: ["Makanan & Minuman", "Transportasi", "Belanja", "Tagihan", "Hiburan", "Kesehatan", "Pendidikan", "Lainnya"],
+                confReset: "Reset seluruh data transaksi?"
+            },
+            en: {
+                subtitle: "Smart & Practical Finance",
+                harian: "Daily Summary", harianDesc: "Manage your daily notes",
+                inc: "Income", exp: "Expense", bal: "Remaining Balance",
+                addTitle: "Add Transaction", descPh: "Description (optional)", amtPh: "Amount", saveBtn: "Save Transaction",
+                listTitle: "Transaction List", reset: "Reset", thDate: "Date", thType: "Type", thCat: "Category", thAmount: "Amount", thAction: "Action",
+                emptyTx: "No transactions yet.",
+                bulanan: "Monthly Summary", bulananDesc: "Monthly transaction summary", mBal: "Balance",
+                mIncCat: "Income Categories", mExpCat: "Expense Categories", emptyInc: "No income yet.", emptyExp: "No expense yet.",
+                tahunan: "Yearly Summary", tahunanDesc: "Yearly financial analysis", yDetail: "Monthly Breakdown",
+                thMonth: "Month", thIn: "In", thOut: "Out", thNet: "Balance",
+                target: "Savings Goals", targetDesc: "Manage your savings dreams", addTarget: "Add New Goal",
+                goalNamePh: "Goal Name (e.g., Buy Laptop)", goalAmtPh: "Target Amount", createGoalBtn: "Create Goal",
+                emptyGoal: "No savings goals yet.", tercapai: "Achieved",
+                grafik: "Analytics Charts", grafikDesc: "Visualize your financial data",
+                c1: "Income vs Expense", c2: "Expense Volume by Category", c3: "Income Volume by Category",
+                navHarian: "Daily", navBulanan: "Monthly", navTahunan: "Yearly", navTarget: "Goals", navGrafik: "Charts",
+                optIn: ["Salary", "Bonus", "Sales", "Investment", "Gift / THR", "Other"],
+                optOut: ["Food & Drink", "Transport", "Shopping", "Bills", "Entertainment", "Health", "Education", "Other"],
+                confReset: "Reset all transaction data?"
+            },
+            jv: {
+                subtitle: "Keuangan Pintar & Praktis",
+                harian: "Rekap Dina Iki", harianDesc: "Kelola catetan dinanmu",
+                inc: "Pemasukan", exp: "Pengeluaran", bal: "Sisa Saldo",
+                addTitle: "Tambah Transaksi", descPh: "Keterangan (opsional)", amtPh: "Nominal", saveBtn: "Simpen Transaksi",
+                listTitle: "Daftar Transaksi", reset: "Reset", thDate: "Tanggal", thType: "Tipe", thCat: "Kategori", thAmount: "Nominal", thAction: "Aksi",
+                emptyTx: "Durung ana transaksi.",
+                bulanan: "Rekap Sasi", bulananDesc: "Ringkesan transaksi saben sasi", mBal: "Saldo",
+                mIncCat: "Kategori Pemasukan", mExpCat: "Kategori Pengeluaran", emptyInc: "Durung ana pemasukan.", emptyExp: "Durung ana pengeluaran.",
+                tahunan: "Rekap Taun", tahunanDesc: "Analisis keuangan taunan", yDetail: "Rincian Saben Sasi",
+                thMonth: "Sasi", thIn: "Mlebu", thOut: "Metu", thNet: "Saldo",
+                target: "Target Nabung", targetDesc: "Kelola impen tabunganmu", addTarget: "Tambah Target Anyar",
+                goalNamePh: "Jeneng Impen (Cth: Tumbas Laptop)", goalAmtPh: "Nominal Target", createGoalBtn: "Nggawe Target",
+                emptyGoal: "Durung ana target nabung.", tercapai: "Kagapai",
+                grafik: "Grafik Analitik", grafikDesc: "Visualisasi data keuanganmu",
+                c1: "Pemasukan vs Pengeluaran", c2: "Volume Pengeluaran per Kategori", c3: "Volume Pemasukan per Kategori",
+                navHarian: "Dina Iki", navBulanan: "Sasi", navTahunan: "Taun", navTarget: "Target", navGrafik: "Grafik",
+                optIn: ["Gaji", "Bonus", "Hasil Dol", "Investasi", "Hadiah / THR", "Liyane"],
+                optOut: ["Panganan & Ngombe", "Transportasi", "Blanja", "Tagihan", "Hiburan", "Kesehatan", "Pendidikan", "Liyane"],
+                confReset: "Reset kabeh data transaksi?"
+            },
+            su: {
+                subtitle: "Keuangan Pintar & Praktis",
+                harian: "Rekap Harian", harianDesc: "Polahkeun catetan poéan anjeun",
+                inc: "Pasukan", exp: "Pangeluaran", bal: "Sésa Saldo",
+                addTitle: "Tambah Transaksi", descPh: "Katerangan (opsional)", amtPh: "Nominal", saveBtn: "Simpen Transaksi",
+                listTitle: "Daptar Transaksi", reset: "Reset", thDate: "Tanggal", thType: "Tipe", thCat: "Kategori", thAmount: "Nominal", thAction: "Aksi",
+                emptyTx: "Tacan aya transaksi.",
+                bulanan: "Rekap Bulanan", bulananDesc: "Ringkesan transaksi bulanan", mBal: "Saldo",
+                mIncCat: "Kategori Pasukan", mExpCat: "Kategori Pangeluaran", emptyInc: "Tacan aya pasukan.", emptyExp: "Tacan aya pangeluaran.",
+                tahunan: "Rekap Taunan", tahunanDesc: "Analisis keuangan taunan", yDetail: "Rincian Per Bulan",
+                thMonth: "Bulan", thIn: "Asup", thOut: "Kaluar", thNet: "Saldo",
+                target: "Target Nabung", targetDesc: "Polahkeun impian tabungan anjeun", addTarget: "Tambah Target Anyar",
+                goalNamePh: "Ngaran Impian (Conto: Meli Laptop)", goalAmtPh: "Nominal Target", createGoalBtn: "Jieun Target",
+                emptyGoal: "Tacan aya target nabung.", tercapai: "Katampa",
+                grafik: "Grafik Analitik", grafikDesc: "Visualisasi data keuangan anjeun",
+                c1: "Pasukan vs Pangeluaran", c2: "Volume Pangeluaran per Kategori", c3: "Volume Pasukan per Kategori",
+                navHarian: "Poéan", navBulanan: "Bulanan", navTahunan: "Taunan", navTarget: "Target", navGrafik: "Grafik",
+                optIn: ["Gaji", "Bonus", "Jualan", "Investasi", "Hadiah / THR", "Lianna"],
+                optOut: ["Dahar & Inum", "Transportasi", "Balanja", "Tagihan", "Hiburan", "Kasehatan", "Pendidikan", "Lianna"],
+                confReset: "Reset sadaya data transaksi?"
+            }
+        };
 
         document.getElementById('filterDate').value = new Date().toISOString().split('T')[0];
         document.getElementById('filterMonth').value = new Date().toISOString().slice(0, 7);
@@ -320,6 +419,7 @@
         }
 
         document.getElementById('currencySelect').value = currency;
+        document.getElementById('langSelect').value = lang;
 
         if (darkMode) {
             document.documentElement.classList.add('dark');
@@ -329,14 +429,81 @@
             document.getElementById('modeIconClass').className = "fa-solid fa-sun text-xs";
         }
 
+        function applyLanguage() {
+            const t = dict[lang];
+            document.getElementById('txt-subtitle').textContent = t.subtitle;
+            document.getElementById('txt-harian-title').textContent = t.harian;
+            document.getElementById('txt-harian-desc').textContent = t.harianDesc;
+            document.getElementById('txt-inc-label').textContent = t.inc;
+            document.getElementById('txt-exp-label').textContent = t.exp;
+            document.getElementById('txt-bal-label').textContent = t.bal;
+            document.getElementById('txt-add-title').innerHTML = `<i class="fa-solid fa-plus-circle text-blue-600"></i> ${t.addTitle}`;
+            document.getElementById('txDesc').placeholder = t.descPh;
+            document.getElementById('txt-amount-placeholder').placeholder = t.amtPh;
+            document.getElementById('txt-save-btn').innerHTML = `<i class="fa-solid fa-save"></i> ${t.saveBtn}`;
+            document.getElementById('txt-list-title').textContent = t.listTitle;
+            document.getElementById('txt-reset-btn').innerHTML = `<i class="fa-solid fa-trash-can mr-1"></i> ${t.reset}`;
+            document.getElementById('txt-th-date').textContent = t.thDate;
+            document.getElementById('txt-th-type').textContent = t.thType;
+            document.getElementById('txt-th-cat').textContent = t.thCat;
+            document.getElementById('txt-th-amount').textContent = t.thAmount;
+            document.getElementById('txt-th-action').textContent = t.thAction;
+
+            document.getElementById('txt-bulanan-title').textContent = t.bulanan;
+            document.getElementById('txt-bulanan-desc').textContent = t.bulananDesc;
+            document.getElementById('txt-m-inc').textContent = t.inc;
+            document.getElementById('txt-m-exp').textContent = t.exp;
+            document.getElementById('txt-m-bal').textContent = t.mBal;
+            document.getElementById('txt-m-inc-cat').innerHTML = `<i class="fa-solid fa-arrow-trend-up mr-1"></i> ${t.mIncCat}`;
+            document.getElementById('txt-m-exp-cat').innerHTML = `<i class="fa-solid fa-arrow-trend-down mr-1"></i> ${t.mExpCat}`;
+
+            document.getElementById('txt-tahunan-title').textContent = t.tahunan;
+            document.getElementById('txt-tahunan-desc').textContent = t.tahunanDesc;
+            document.getElementById('txt-y-inc').textContent = t.inc;
+            document.getElementById('txt-y-exp').textContent = t.exp;
+            document.getElementById('txt-y-bal').textContent = t.mBal;
+            document.getElementById('txt-y-detail').textContent = t.yDetail;
+            document.getElementById('txt-th-month').textContent = t.thMonth;
+            document.getElementById('txt-th-in').textContent = t.thIn;
+            document.getElementById('txt-th-out').textContent = t.thOut;
+            document.getElementById('txt-th-net').textContent = t.thNet;
+
+            document.getElementById('txt-target-title').textContent = t.target;
+            document.getElementById('txt-target-desc').textContent = t.targetDesc;
+            document.getElementById('txt-add-target-title').innerHTML = `<i class="fa-solid fa-plus-circle text-blue-600"></i> ${t.addTarget}`;
+            document.getElementById('txt-goal-name-ph').placeholder = t.goalNamePh;
+            document.getElementById('txt-goal-amt-ph').placeholder = t.goalAmtPh;
+            document.getElementById('txt-create-goal-btn').innerHTML = `<i class="fa-solid fa-bullseye"></i> ${t.createGoalBtn}`;
+
+            document.getElementById('txt-grafik-title').textContent = t.grafik;
+            document.getElementById('txt-grafik-desc').textContent = t.grafikDesc;
+            document.getElementById('txt-chart-1').textContent = t.c1;
+            document.getElementById('txt-chart-2').textContent = t.c2;
+            document.getElementById('txt-chart-3').textContent = t.c3;
+
+            document.getElementById('txt-nav-harian').textContent = t.navHarian;
+            document.getElementById('txt-nav-bulanan').textContent = t.navBulanan;
+            document.getElementById('txt-nav-tahunan').textContent = t.navTahunan;
+            document.getElementById('txt-nav-target').textContent = t.navTarget;
+            document.getElementById('txt-nav-grafik').textContent = t.navGrafik;
+
+            updateCategoryOptions();
+        }
+
+        function changeLanguage() {
+            lang = document.getElementById('langSelect').value;
+            localStorage.setItem('kikap_lang', lang);
+            applyLanguage();
+            renderApp();
+        }
+
         function updateCategoryOptions() {
             const type = document.getElementById('txType').value;
             const categorySelect = document.getElementById('txCategory');
             categorySelect.innerHTML = '';
 
-            let categories = type === 'Pemasukan' 
-                ? ['Gaji', 'Bonus', 'Penjualan', 'Investasi', 'Hadiah / THR', 'Lainnya'] 
-                : ['Makanan & Minuman', 'Transportasi', 'Belanja', 'Tagihan', 'Hiburan', 'Kesehatan', 'Pendidikan', 'Lainnya'];
+            const t = dict[lang];
+            let categories = type === 'Pemasukan' ? t.optIn : t.optOut;
 
             categories.forEach(cat => {
                 let opt = document.createElement('option');
@@ -345,16 +512,13 @@
                 categorySelect.appendChild(opt);
             });
         }
-        updateCategoryOptions();
 
         function formatMoney(amount) {
-            let locales = 'id-ID', cur = currency;
-            if (cur === 'USD') locales = 'en-US';
-            else if (cur === 'EUR') locales = 'de-DE';
-            else if (cur === 'SGD') locales = 'en-SG';
-            else if (cur === 'JPY') locales = 'ja-JP';
-            else if (cur === 'MYR') locales = 'ms-MY';
-            return new Intl.NumberFormat(locales, { style: 'currency', currency: cur, maximumFractionDigits: 0 }).format(amount);
+            return new Intl.NumberFormat(undefined, { 
+                style: 'currency', 
+                currency: currency, 
+                maximumFractionDigits: 0 
+            }).format(amount);
         }
 
         function switchTab(tabId) {
@@ -394,7 +558,7 @@
             const type = document.getElementById('txType').value;
             const category = document.getElementById('txCategory').value;
             const desc = document.getElementById('txDesc').value.trim();
-            const amount = parseFloat(document.getElementById('txAmount').value);
+            const amount = parseFloat(document.getElementById('txt-amount-placeholder').value);
             const date = document.getElementById('filterDate').value;
 
             transactions.push({ id: Date.now(), date, type, category, desc, amount });
@@ -413,7 +577,8 @@
         }
 
         function resetData() {
-            if(confirm("Reset seluruh data transaksi?")) {
+            const t = dict[lang];
+            if(confirm(t.confReset)) {
                 transactions = [];
                 localStorage.removeItem('kikap_transactions');
                 renderApp();
@@ -422,8 +587,8 @@
 
         function addSavingsGoal(e) {
             e.preventDefault();
-            const name = document.getElementById('newGoalName').value.trim();
-            const target = parseFloat(document.getElementById('newGoalAmount').value);
+            const name = document.getElementById('txt-goal-name-ph').value.trim();
+            const target = parseFloat(document.getElementById('txt-goal-amt-ph').value);
             if(!name || isNaN(target) || target <= 0) return;
 
             savingsGoals.push({ id: Date.now(), name, target });
@@ -439,23 +604,24 @@
         }
 
         function renderApp() {
+            const t = dict[lang];
             const selectedDate = document.getElementById('filterDate').value;
-            const dailyTxs = transactions.filter(t => t.date === selectedDate);
+            const dailyTxs = transactions.filter(t_item => t_item.date === selectedDate);
             
             let dInc = 0, dExp = 0, tbodyHarian = '';
-            dailyTxs.forEach(t => {
-                if(t.type === 'Pemasukan') dInc += t.amount; else dExp += t.amount;
+            dailyTxs.forEach(t_item => {
+                if(t_item.type === 'Pemasukan') dInc += t_item.amount; else dExp += t_item.amount;
                 tbodyHarian += `
                     <tr class="hover:bg-gray-50 dark:hover:bg-gray-700/50">
-                        <td class="p-2">${t.date}</td>
-                        <td class="p-2"><span class="px-1.5 py-0.5 rounded text-[9px] font-semibold ${t.type === 'Pemasukan' ? 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400' : 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400'}">${t.type}</span></td>
-                        <td class="p-2 font-medium truncate max-w-[80px]">${t.category}</td>
-                        <td class="p-2 text-right font-bold ${t.type === 'Pemasukan' ? 'text-blue-600' : 'text-red-600'}">${formatMoney(t.amount)}</td>
-                        <td class="p-2 text-center"><button type="button" onclick="deleteTransaction(${t.id})" class="text-red-400 hover:text-red-600 p-1"><i class="fa-solid fa-trash text-[10px]"></i></button></td>
+                        <td class="p-2">${t_item.date}</td>
+                        <td class="p-2"><span class="px-1.5 py-0.5 rounded text-[9px] font-semibold ${t_item.type === 'Pemasukan' ? 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400' : 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400'}">${t_item.type}</span></td>
+                        <td class="p-2 font-medium truncate max-w-[80px]">${t_item.category}</td>
+                        <td class="p-2 text-right font-bold ${t_item.type === 'Pemasukan' ? 'text-blue-600' : 'text-red-600'}">${formatMoney(t_item.amount)}</td>
+                        <td class="p-2 text-center"><button type="button" onclick="deleteTransaction(${t_item.id})" class="text-red-400 hover:text-red-600 p-1"><i class="fa-solid fa-trash text-[10px]"></i></button></td>
                     </tr>
                 `;
             });
-            if(dailyTxs.length === 0) tbodyHarian = `<tr><td colspan="5" class="p-3 text-center text-gray-400 text-[11px]">Belum ada transaksi.</td></tr>`;
+            if(dailyTxs.length === 0) tbodyHarian = `<tr><td colspan="5" class="p-3 text-center text-gray-400 text-[11px]">${t.emptyTx}</td></tr>`;
 
             document.getElementById('dailyIncome').textContent = formatMoney(dInc);
             document.getElementById('dailyExpense').textContent = formatMoney(dExp);
@@ -463,16 +629,16 @@
             document.getElementById('transactionTableBody').innerHTML = tbodyHarian;
 
             const selectedMonth = document.getElementById('filterMonth').value;
-            const monthlyTxs = transactions.filter(t => t.date.startsWith(selectedMonth));
+            const monthlyTxs = transactions.filter(t_item => t_item.date.startsWith(selectedMonth));
             let mInc = 0, mExp = 0, incomeCatVolume = {}, expenseCatVolume = {};
 
-            monthlyTxs.forEach(t => {
-                if(t.type === 'Pemasukan') {
-                    mInc += t.amount;
-                    incomeCatVolume[t.category] = (incomeCatVolume[t.category] || 0) + t.amount;
+            monthlyTxs.forEach(t_item => {
+                if(t_item.type === 'Pemasukan') {
+                    mInc += t_item.amount;
+                    incomeCatVolume[t_item.category] = (incomeCatVolume[t_item.category] || 0) + t_item.amount;
                 } else {
-                    mExp += t.amount;
-                    expenseCatVolume[t.category] = (expenseCatVolume[t.category] || 0) + t.amount;
+                    mExp += t_item.amount;
+                    expenseCatVolume[t_item.category] = (expenseCatVolume[t_item.category] || 0) + t_item.amount;
                 }
             });
 
@@ -485,7 +651,7 @@
                 let pct = mInc > 0 ? Math.round((amt / mInc) * 100) : 0;
                 incomeVolHtml += `<div><div class="flex justify-between text-[11px] mb-0.5"><span class="font-medium">${cat}</span><span class="text-gray-400">${formatMoney(amt)} (${pct}%)</span></div><div class="w-full bg-gray-100 dark:bg-gray-700 h-1.5 rounded-full overflow-hidden"><div class="bg-blue-600 h-full rounded-full" style="width: ${pct}%"></div></div></div>`;
             }
-            if(Object.keys(incomeCatVolume).length === 0) incomeVolHtml = '<p class="text-[11px] text-gray-400">Belum ada pemasukan.</p>';
+            if(Object.keys(incomeCatVolume).length === 0) incomeVolHtml = `<p class="text-[11px] text-gray-400">${t.emptyInc}</p>`;
             document.getElementById('monthlyIncomeCategoryVolume').innerHTML = incomeVolHtml;
 
             let expenseVolHtml = '';
@@ -493,17 +659,17 @@
                 let pct = mExp > 0 ? Math.round((amt / mExp) * 100) : 0;
                 expenseVolHtml += `<div><div class="flex justify-between text-[11px] mb-0.5"><span class="font-medium">${cat}</span><span class="text-gray-400">${formatMoney(amt)} (${pct}%)</span></div><div class="w-full bg-gray-100 dark:bg-gray-700 h-1.5 rounded-full overflow-hidden"><div class="bg-red-500 h-full rounded-full" style="width: ${pct}%"></div></div></div>`;
             }
-            if(Object.keys(expenseCatVolume).length === 0) expenseVolHtml = '<p class="text-[11px] text-gray-400">Belum ada pengeluaran.</p>';
+            if(Object.keys(expenseCatVolume).length === 0) expenseVolHtml = `<p class="text-[11px] text-gray-400">${t.emptyExp}</p>`;
             document.getElementById('monthlyExpenseCategoryVolume').innerHTML = expenseVolHtml;
 
             const selectedYear = document.getElementById('filterYear').value;
-            const yearlyTxs = transactions.filter(t => t.date.startsWith(selectedYear));
+            const yearlyTxs = transactions.filter(t_item => t_item.date.startsWith(selectedYear));
             let yInc = 0, yExp = 0, monthlyBreakdown = Array(12).fill(0).map(() => ({ inc: 0, exp: 0 }));
 
-            yearlyTxs.forEach(t => {
-                let mIndex = parseInt(t.date.split('-')[1]) - 1;
-                if(t.type === 'Pemasukan') { yInc += t.amount; monthlyBreakdown[mIndex].inc += t.amount; }
-                else { yExp += t.amount; monthlyBreakdown[mIndex].exp += t.amount; }
+            yearlyTxs.forEach(t_item => {
+                let mIndex = parseInt(t_item.date.split('-')[1]) - 1;
+                if(t_item.type === 'Pemasukan') { yInc += t_item.amount; monthlyBreakdown[mIndex].inc += t_item.amount; }
+                else { yExp += t_item.amount; monthlyBreakdown[mIndex].exp += t_item.amount; }
             });
 
             document.getElementById('yearlyIncome').textContent = formatMoney(yInc);
@@ -517,8 +683,8 @@
             });
             document.getElementById('yearlyTableBody').innerHTML = yearlyTableHtml;
 
-            let totalAllIncome = transactions.filter(t => t.type === 'Pemasukan').reduce((sum, t) => sum + t.amount, 0);
-            let totalAllExpense = transactions.filter(t => t.type === 'Pengeluaran').reduce((sum, t) => sum + t.amount, 0);
+            let totalAllIncome = transactions.filter(t_item => t_item.type === 'Pemasukan').reduce((sum, t_item) => sum + t_item.amount, 0);
+            let totalAllExpense = transactions.filter(t_item => t_item.type === 'Pengeluaran').reduce((sum, t_item) => sum + t_item.amount, 0);
             let netSavings = Math.max(totalAllIncome - totalAllExpense, 0);
 
             document.getElementById('goalBadge').textContent = savingsGoals.length;
@@ -530,11 +696,11 @@
                 goalsHtml += `
                     <div class="bg-white dark:bg-gray-800 p-3.5 rounded-2xl shadow-sm border dark:border-gray-700 space-y-2 w-full">
                         <div class="flex justify-between items-center"><span class="font-bold text-xs"><i class="fa-solid fa-bullseye text-blue-600 mr-1.5"></i>${goal.name}</span><button type="button" onclick="deleteSavingsGoal(${goal.id})" class="text-red-400 hover:text-red-600 p-1 text-[11px]"><i class="fa-solid fa-trash-can"></i></button></div>
-                        <div class="space-y-1"><div class="flex justify-between text-[11px] font-semibold"><span>Terkumpul: ${formatMoney(allocated)}</span><span>Target: ${formatMoney(goal.target)}</span></div><div class="w-full bg-gray-100 dark:bg-gray-700 h-2 rounded-full overflow-hidden"><div class="bg-blue-600 h-full rounded-full" style="width: ${pct}%"></div></div><p class="text-right text-[10px] font-bold text-blue-600 dark:text-blue-400">${pct}% Tercapai</p></div>
+                        <div class="space-y-1"><div class="flex justify-between text-[11px] font-semibold"><span>Terkumpul: ${formatMoney(allocated)}</span><span>Target: ${formatMoney(goal.target)}</span></div><div class="w-full bg-gray-100 dark:bg-gray-700 h-2 rounded-full overflow-hidden"><div class="bg-blue-600 h-full rounded-full" style="width: ${pct}%"></div></div><p class="text-right text-[10px] font-bold text-blue-600 dark:text-blue-400">${pct}% ${t.tercapai}</p></div>
                     </div>
                 `;
             });
-            if(savingsGoals.length === 0) goalsHtml = `<div class="p-3 text-center text-gray-400 text-xs bg-white dark:bg-gray-800 rounded-2xl border dark:border-gray-700 w-full">Belum ada target nabung.</div>`;
+            if(savingsGoals.length === 0) goalsHtml = `<div class="p-3 text-center text-gray-400 text-xs bg-white dark:bg-gray-800 rounded-2xl border dark:border-gray-700 w-full">${t.emptyGoal}</div>`;
             document.getElementById('savingsGoalsContainer').innerHTML = goalsHtml;
 
             renderCharts(mInc, mExp, incomeCatVolume, expenseCatVolume);
@@ -566,6 +732,7 @@
             });
         }
 
+        applyLanguage();
         switchTab('harian');
     </script>
 </body>
