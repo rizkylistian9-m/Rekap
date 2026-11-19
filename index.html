@@ -37,10 +37,10 @@
                     <i class="fa-solid fa-user-secret"></i> Lanjut Sebagai Tamu (Tanpa Akun)
                 </button>
                 <div class="grid grid-cols-2 gap-2">
-                    <button type="button" onclick="loginWithGmail(false)" class="w-full bg-white dark:bg-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600 text-gray-800 dark:text-gray-100 border border-gray-300 dark:border-gray-600 font-semibold rounded-xl py-2 text-xs transition-colors flex items-center justify-center gap-1.5">
+                    <button id="btnLoginGmail" type="button" onclick="loginWithGmail(false)" class="w-full bg-white dark:bg-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600 text-gray-800 dark:text-gray-100 border border-gray-300 dark:border-gray-600 font-semibold rounded-xl py-2 text-xs transition-colors flex items-center justify-center gap-1.5">
                         <i class="fa-brands fa-google text-red-500"></i> Masuk Gmail
                     </button>
-                    <button type="button" onclick="loginWithGmail(true)" class="w-full bg-blue-50 dark:bg-blue-900/30 hover:bg-blue-100 dark:hover:bg-blue-900/50 text-blue-700 dark:text-blue-300 border border-blue-200 dark:border-blue-800 font-semibold rounded-xl py-2 text-xs transition-colors flex items-center justify-center gap-1.5">
+                    <button id="btnSwitchGmail" type="button" onclick="loginWithGmail(true)" class="w-full bg-blue-50 dark:bg-blue-900/30 hover:bg-blue-100 dark:hover:bg-blue-900/50 text-blue-700 dark:text-blue-300 border border-blue-200 dark:border-blue-800 font-semibold rounded-xl py-2 text-xs transition-colors flex items-center justify-center gap-1.5">
                         <i class="fa-solid fa-arrows-rotate text-[11px]"></i> Ganti Akun
                     </button>
                 </div>
@@ -193,7 +193,7 @@
                 <option value="GBP">GBP</option>
                 <option value="SAR">SAR</option>
             </select>
-            <button onclick="toggleDarkMode()" class="bg-gray-100 dark:bg-gray-700 p-1 rounded-lg text-xs w-7 h-7 flex items-center justify-center flex-shrink-0" title="Mode Gelap/Terang">
+            <button type="button" onclick="toggleDarkMode()" class="bg-gray-100 dark:bg-gray-700 p-1 rounded-lg text-xs w-7 h-7 flex items-center justify-center flex-shrink-0" title="Mode Gelap/Terang">
                 <i id="modeIconClass" class="fa-solid fa-sun text-xs"></i>
             </button>
         </div>
@@ -726,12 +726,21 @@
             }
         };
 
+        function resetAuthLock() {
+            isGoogleAuthInProgress = false;
+            localStorage.removeItem(PENDING_OAUTH_ACTION_KEY);
+        }
+
+        window.addEventListener('pageshow', resetAuthLock);
+        window.addEventListener('load', resetAuthLock);
+
         function setSyncBadge(text) {
             const el = document.getElementById('cloudSyncStatus');
             if (el) el.textContent = text;
         }
 
         function showAuthError(msg) {
+            resetAuthLock();
             const errBox = document.getElementById('authError');
             errBox.className = "bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400 text-xs p-2.5 rounded-xl";
             errBox.textContent = msg;
@@ -745,20 +754,27 @@
         }
 
         function loginAsGuest() {
-            if (isGoogleAuthInProgress) return;
+            resetAuthLock();
             document.getElementById('authError').classList.add('hidden');
             auth.signInAnonymously().catch(error => {
                 showAuthError("Gagal masuk mode tamu: " + error.message);
             });
         }
 
-        function isWebViewOrRestrictedEnvironment() {
+        function isAndroidAppEnvironment() {
             const ua = navigator.userAgent || '';
-            return /\bwv\b|WebView|Android.*Version\/[\d.]+/i.test(ua);
+            const isAndroid = /Android/i.test(ua);
+            const isStandalone = window.matchMedia && window.matchMedia('(display-mode: standalone)').matches;
+            const isWebView = /\bwv\b|WebView|; wv\)/i.test(ua);
+            return isAndroid && (isStandalone || isWebView || Boolean(window.Capacitor) || Boolean(window.AndroidInterface));
         }
 
         function runGoogleAuthWithFallback(mode, guestUid) {
-            if (isGoogleAuthInProgress) return;
+            const pendingAction = localStorage.getItem(PENDING_OAUTH_ACTION_KEY);
+            if (isGoogleAuthInProgress && pendingAction) {
+                return;
+            }
+
             isGoogleAuthInProgress = true;
             document.getElementById('authError').classList.add('hidden');
 
@@ -771,8 +787,7 @@
             const activeUser = auth.currentUser;
 
             const finishSuccess = (resUser) => {
-                isGoogleAuthInProgress = false;
-                localStorage.removeItem(PENDING_OAUTH_ACTION_KEY);
+                resetAuthLock();
                 const savedGuestUid = localStorage.getItem(PENDING_GUEST_UID_KEY);
                 if (savedGuestUid && resUser && savedGuestUid !== resUser.uid) {
                     migrateStorageData(savedGuestUid, resUser.uid);
@@ -786,51 +801,66 @@
             };
 
             const triggerRedirectFallback = () => {
-                isGoogleAuthInProgress = true;
-                if (mode === 'link' && activeUser && activeUser.isAnonymous) {
-                    activeUser.linkWithRedirect(provider).catch(() => {
-                        isGoogleAuthInProgress = false;
-                    });
-                } else {
-                    auth.signInWithRedirect(provider).catch(() => {
-                        isGoogleAuthInProgress = false;
-                    });
+                try {
+                    if (mode === 'link' && activeUser && activeUser.isAnonymous) {
+                        activeUser.linkWithRedirect(provider).catch(err => {
+                            showAuthError("Gagal alihkan ke Google: " + (err && err.message ? err.message : "Redirect error"));
+                        });
+                    } else {
+                        auth.signInWithRedirect(provider).catch(err => {
+                            showAuthError("Gagal alihkan ke Google: " + (err && err.message ? err.message : "Redirect error"));
+                        });
+                    }
+                } catch (err) {
+                    showAuthError("Gagal membuka halaman login Google: " + (err && err.message ? err.message : "Error"));
                 }
             };
 
             const handleAuthError = (error) => {
-                isGoogleAuthInProgress = false;
-                if (error.code === 'auth/cancelled-popup-request') {
+                const code = (error && error.code) || '';
+                if (code === 'auth/cancelled-popup-request') {
+                    resetAuthLock();
                     return;
                 }
-                if (error.code === 'auth/popup-closed-by-user') {
-                    localStorage.removeItem(PENDING_OAUTH_ACTION_KEY);
+                if (code === 'auth/popup-closed-by-user') {
+                    resetAuthLock();
                     return;
                 }
-                if (mode === 'link' && (error.code === 'auth/credential-already-in-use' || error.code === 'auth/provider-already-linked')) {
-                    isGoogleAuthInProgress = true;
+                if (mode === 'link' && (code === 'auth/credential-already-in-use' || code === 'auth/provider-already-linked')) {
                     auth.signInWithPopup(provider)
                         .then(res => finishSuccess(res.user))
                         .catch(err => {
-                            isGoogleAuthInProgress = false;
-                            if (err.code === 'auth/popup-blocked' || err.code === 'auth/operation-not-supported-in-this-environment') {
+                            const errCode = (err && err.code) || '';
+                            if (
+                                errCode === 'auth/popup-blocked' ||
+                                errCode === 'auth/operation-not-supported-in-this-environment' ||
+                                errCode === 'auth/network-request-failed' ||
+                                isAndroidAppEnvironment()
+                            ) {
                                 triggerRedirectFallback();
                                 return;
                             }
-                            if (err.code !== 'auth/popup-closed-by-user' && err.code !== 'auth/cancelled-popup-request') {
-                                showAuthError("Gagal ganti akun Gmail: " + err.message);
+                            if (errCode !== 'auth/popup-closed-by-user' && errCode !== 'auth/cancelled-popup-request') {
+                                showAuthError("Gagal ganti akun Gmail: " + (err && err.message ? err.message : "Error"));
+                            } else {
+                                resetAuthLock();
                             }
                         });
                     return;
                 }
-                if (error.code === 'auth/popup-blocked' || error.code === 'auth/operation-not-supported-in-this-environment') {
+                if (
+                    code === 'auth/popup-blocked' ||
+                    code === 'auth/operation-not-supported-in-this-environment' ||
+                    code === 'auth/network-request-failed' ||
+                    isAndroidAppEnvironment()
+                ) {
                     triggerRedirectFallback();
                     return;
                 }
-                showAuthError("Gagal proses Gmail: " + error.message);
+                showAuthError("Gagal proses Gmail: " + (error && error.message ? error.message : "Error"));
             };
 
-            if (isWebViewOrRestrictedEnvironment()) {
+            if (isAndroidAppEnvironment()) {
                 triggerRedirectFallback();
                 return;
             }
@@ -867,11 +897,12 @@
 
         auth.getRedirectResult()
             .then(result => {
-                localStorage.removeItem(PENDING_OAUTH_ACTION_KEY);
+                resetAuthLock();
                 const savedGuestUid = localStorage.getItem(PENDING_GUEST_UID_KEY);
                 if (result && result.user) {
                     if (savedGuestUid && savedGuestUid !== result.user.uid) {
                         migrateStorageData(savedGuestUid, result.user.uid);
+                        syncToFirestore(result.user.uid, result.user);
                     }
                     localStorage.removeItem(PENDING_GUEST_UID_KEY);
                     if (result.user.email) {
@@ -879,8 +910,11 @@
                     }
                 }
             })
-            .catch(() => {
-                localStorage.removeItem(PENDING_OAUTH_ACTION_KEY);
+            .catch(err => {
+                resetAuthLock();
+                if (err && err.code && err.code !== 'auth/null-user') {
+                    showAuthError("Gagal proses login Google: " + err.message);
+                }
             });
 
         function readLocalUserSnapshot(uid) {
@@ -1054,6 +1088,7 @@
         }
 
         auth.onAuthStateChanged(user => {
+            resetAuthLock();
             const authScreen = document.getElementById('authScreen');
             const menuToggleBtn = document.getElementById('menuToggleBtn');
             if (user) {
@@ -1141,9 +1176,9 @@
         }
 
         function resetSessionStateForAuth() {
+            resetAuthLock();
             currentStorageUid = null;
             isGuestSession = false;
-            isGoogleAuthInProgress = false;
             transactions = [];
             receivables = [];
             savingsGoals = [];
