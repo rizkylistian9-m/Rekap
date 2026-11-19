@@ -1,64 +1,49 @@
 <!DOCTYPE html>
-<html lang="id">
+<html lang="id" class="light">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>KI-KAP - Keuangan Pintar & Praktis</title>
-    
-    <!-- PWA Manifest & Meta Tags -->
     <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#0284c7">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="apple-mobile-web-app-title" content="KI-KAP">
-
-    <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <script>
-        tailwind.config = {
-            darkMode: 'class',
-            theme: {
-                extend: {
-                    colors: {
-                        brand: { 50: '#f0f9ff', 500: '#0ea5e9', 600: '#0284c7', 700: '#0369a1' }
-                    }
-                }
-            }
-        }
-    </script>
-    <!-- Chart.js CDN -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <!-- FontAwesome Icons -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    
-    <!-- Firebase SDK (Compat) -->
-    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore-compat.js"></script>
+    <script>
+        tailwind.config = { darkMode: 'class' }
+    </script>
 </head>
-<body class="bg-gray-100 dark:bg-gray-900 text-gray-800 dark:text-gray-100 flex flex-col pb-8 transition-colors duration-200 w-full overflow-x-hidden min-h-screen">
+<body class="bg-gray-50 text-gray-800 dark:bg-gray-900 dark:text-gray-100 transition-colors duration-200 min-h-screen w-full overflow-x-hidden">
 
-    <!-- ================= Halaman Login / Auth ================= -->
-    <div id="authScreen" class="fixed inset-0 bg-gray-900 z-50 flex items-center justify-center p-4 hidden">
-        <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-xl p-6 w-full max-w-sm space-y-4 border dark:border-gray-700">
+    <!-- ================= Layar Masuk / Daftar / Ganti Akun ================= -->
+    <div id="authScreen" class="fixed inset-0 z-50 flex items-center justify-center bg-gray-50 dark:bg-gray-900 px-4 py-6 overflow-y-auto">
+        <div class="max-w-sm w-full bg-white dark:bg-gray-800 rounded-2xl shadow-xl p-6 space-y-4 border dark:border-gray-700 my-auto">
             <div class="text-center space-y-1">
-                <div class="w-12 h-12 rounded-full bg-gradient-to-tr from-blue-600 to-sky-400 flex items-center justify-center text-white mx-auto shadow-md">
+                <div class="w-12 h-12 rounded-full bg-gradient-to-tr from-blue-600 to-sky-400 mx-auto flex items-center justify-center text-white shadow-md">
                     <i class="fa-solid fa-wallet text-lg"></i>
                 </div>
-                <h1 class="font-bold text-lg text-blue-600 dark:text-blue-400">KI-KAP</h1>
-                <p id="authSubtitle" class="text-xs text-gray-400">Masuk untuk mengelola keuanganmu</p>
+                <h1 class="text-xl font-bold text-blue-600 dark:text-blue-400">KI-KAP</h1>
+                <p id="authSubtitle" class="text-xs text-gray-500 dark:text-gray-400">Masuk untuk mengelola keuanganmu</p>
             </div>
 
-            <div id="authError" class="bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400 text-xs p-2.5 rounded-xl hidden"></div>
+            <div id="authError" class="hidden bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400 text-xs p-2.5 rounded-xl"></div>
 
-            <!-- Masuk Mode Tamu & Login Gmail -->
-            <div class="space-y-2">
-                <button type="button" onclick="loginAsGuest()" class="w-full bg-amber-500 hover:bg-amber-600 text-white font-semibold rounded-xl py-2.5 text-xs transition-colors shadow-sm flex items-center justify-center gap-1.5">
-                    <i class="fa-solid fa-user-secret"></i> Masuk Mode Tamu (Tanpa Daftar)
+            <!-- Mode Tamu & Ganti Akun Gmail -->
+            <div class="space-y-2 pt-1">
+                <button type="button" onclick="loginAsGuest()" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-semibold rounded-xl py-2.5 text-xs transition-colors shadow-md flex items-center justify-center gap-2">
+                    <i class="fa-solid fa-user-secret"></i> Lanjut Sebagai Tamu (Tanpa Akun)
                 </button>
-                <button type="button" onclick="loginWithGmail()" class="w-full bg-white dark:bg-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600 text-gray-800 dark:text-gray-100 border border-gray-300 dark:border-gray-600 font-semibold rounded-xl py-2 text-xs transition-colors flex items-center justify-center gap-2">
-                    <i class="fa-brands fa-google text-red-500"></i> Masuk dengan Akun Gmail
-                </button>
+                <div class="grid grid-cols-2 gap-2">
+                    <button type="button" onclick="loginWithGmail(false)" class="w-full bg-white dark:bg-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600 text-gray-800 dark:text-gray-100 border border-gray-300 dark:border-gray-600 font-semibold rounded-xl py-2 text-xs transition-colors flex items-center justify-center gap-1.5">
+                        <i class="fa-brands fa-google text-red-500"></i> Masuk Gmail
+                    </button>
+                    <button type="button" onclick="loginWithGmail(true)" class="w-full bg-blue-50 dark:bg-blue-900/30 hover:bg-blue-100 dark:hover:bg-blue-900/50 text-blue-700 dark:text-blue-300 border border-blue-200 dark:border-blue-800 font-semibold rounded-xl py-2 text-xs transition-colors flex items-center justify-center gap-1.5">
+                        <i class="fa-solid fa-arrows-rotate text-[11px]"></i> Ganti Akun
+                    </button>
+                </div>
                 <p class="text-[10px] text-center text-gray-400">Mode tamu untuk coba-coba; login Gmail agar data tersimpan ke cloud.</p>
             </div>
 
@@ -112,15 +97,21 @@
                 </button>
             </div>
 
-            <!-- Banner Status Tamu & Tombol Simpan / Ganti Gmail -->
-            <div id="guestSaveBanner" class="bg-amber-50 dark:bg-amber-900/25 border border-amber-200 dark:border-amber-800/60 rounded-xl p-2.5 space-y-2 hidden">
-                <p class="text-[10px] font-semibold text-amber-800 dark:text-amber-300 leading-snug">
-                    Kamu sedang pakai <b>Mode Tamu</b>. Login Gmail agar data tersimpan ke cloud.
+            <!-- Panel Akun: Simpan Gmail & Ganti Akun -->
+            <div id="accountActionBox" class="bg-blue-50/80 dark:bg-blue-900/20 border border-blue-200/80 dark:border-blue-800/60 rounded-xl p-2.5 space-y-2 hidden">
+                <p id="guestSaveBannerText" class="text-[10px] font-semibold text-amber-800 dark:text-amber-300 leading-snug hidden">
+                    Kamu sedang pakai <b>Mode Tamu</b>. Simpan ke Gmail agar data masuk ke cloud.
                 </p>
-                <button id="sidebarGmailBtn" type="button" onclick="connectOrSwitchGmail()" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg py-1.5 px-2 text-[10px] transition-colors flex items-center justify-center gap-1.5 shadow-sm">
-                    <i class="fa-brands fa-google"></i>
-                    <span id="sidebarGmailBtnText">Simpan / Ganti Gmail</span>
-                </button>
+                <div class="grid grid-cols-2 gap-1.5">
+                    <button id="sidebarSaveGmailBtn" type="button" onclick="upgradeGuestToGmail()" class="bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg py-1.5 px-2 text-[10px] transition-colors flex items-center justify-center gap-1 shadow-sm">
+                        <i class="fa-brands fa-google"></i>
+                        <span>Simpan Gmail</span>
+                    </button>
+                    <button id="sidebarSwitchGmailBtn" type="button" onclick="switchGmailAccount()" class="bg-white dark:bg-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 text-gray-800 dark:text-gray-100 border border-gray-300 dark:border-gray-600 font-semibold rounded-lg py-1.5 px-2 text-[10px] transition-colors flex items-center justify-center gap-1 shadow-sm">
+                        <i class="fa-solid fa-arrows-rotate text-[10px]"></i>
+                        <span>Ganti Akun</span>
+                    </button>
+                </div>
             </div>
 
             <nav class="space-y-1">
@@ -178,9 +169,13 @@
             </div>
         </div>
         <div class="flex items-center gap-1">
-            <button id="headerGmailSaveBtn" type="button" onclick="connectOrSwitchGmail()" class="bg-amber-100 hover:bg-amber-200 dark:bg-amber-900/40 text-amber-800 dark:text-amber-300 px-2 py-1 rounded-lg text-[10px] font-semibold flex items-center gap-1 flex-shrink-0 hidden" title="Simpan data atau ganti akun Gmail">
+            <button id="headerGmailSaveBtn" type="button" onclick="upgradeGuestToGmail()" class="bg-amber-100 hover:bg-amber-200 dark:bg-amber-900/40 text-amber-800 dark:text-amber-300 px-2 py-1 rounded-lg text-[10px] font-semibold flex items-center gap-1 flex-shrink-0 hidden" title="Simpan data tamu ke Gmail">
                 <i class="fa-brands fa-google text-red-500"></i>
-                <span id="headerGmailBtnText">Simpan Gmail</span>
+                <span>Simpan</span>
+            </button>
+            <button id="headerSwitchGmailBtn" type="button" onclick="switchGmailAccount()" class="bg-blue-50 hover:bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 px-2 py-1 rounded-lg text-[10px] font-semibold flex items-center gap-1 flex-shrink-0 hidden" title="Ganti Akun Gmail">
+                <i class="fa-solid fa-arrows-rotate text-[10px]"></i>
+                <span>Ganti</span>
             </button>
             <select id="langSelect" onchange="changeLanguage()" class="bg-gray-100 dark:bg-gray-700 border dark:border-gray-600 rounded-lg px-1.5 py-1 text-[10px] font-medium focus:outline-none">
                 <option value="id">ID</option>
@@ -370,7 +365,7 @@
             </div>
         </div>
 
-        <!-- 4. Tab: Piutang (Terpisah dari Kas/Transaksi Utama) -->
+        <!-- 4. Tab: Piutang -->
         <div id="content-piutang" class="tab-content space-y-3 hidden w-full">
             <div class="bg-white dark:bg-gray-800 p-3 rounded-2xl shadow-sm border dark:border-gray-700">
                 <h2 id="txt-piutang-title" class="text-base font-bold">Catatan Piutang</h2>
@@ -469,8 +464,10 @@
 
         const SAVED_ACCOUNTS_KEY = 'kikap_saved_accounts';
         const PENDING_GUEST_UID_KEY = 'kikap_pending_guest_uid';
+        const PENDING_OAUTH_ACTION_KEY = 'kikap_pending_oauth_action';
         let currentStorageUid = null;
         let isGuestSession = false;
+        let isGoogleAuthInProgress = false;
         let transactions = [];
         let receivables = [];
         let savingsGoals = [];
@@ -758,21 +755,143 @@
         }
 
         function loginAsGuest() {
+            if (isGoogleAuthInProgress) return;
             document.getElementById('authError').classList.add('hidden');
             auth.signInAnonymously().catch(error => {
                 showAuthError("Gagal masuk mode tamu: " + error.message);
             });
         }
 
-        function loginWithGmail() {
-            document.getElementById('authError').classList.add('hidden');
-            const provider = createGoogleProvider();
-            auth.signInWithPopup(provider).catch(error => {
-                if (error.code !== 'auth/popup-closed-by-user') {
-                    showAuthError("Gagal login Gmail: " + error.message);
-                }
-            });
+        function isWebViewOrRestrictedEnvironment() {
+            const ua = navigator.userAgent || '';
+            return /\bwv\b|WebView|Android.*Version\/[\d.]+/i.test(ua);
         }
+
+        function runGoogleAuthWithFallback(mode, guestUid) {
+            if (isGoogleAuthInProgress) return;
+            isGoogleAuthInProgress = true;
+            document.getElementById('authError').classList.add('hidden');
+
+            if (guestUid) {
+                localStorage.setItem(PENDING_GUEST_UID_KEY, guestUid);
+            }
+            localStorage.setItem(PENDING_OAUTH_ACTION_KEY, mode);
+
+            const provider = createGoogleProvider();
+            const activeUser = auth.currentUser;
+
+            const finishSuccess = (resUser) => {
+                isGoogleAuthInProgress = false;
+                localStorage.removeItem(PENDING_OAUTH_ACTION_KEY);
+                const savedGuestUid = localStorage.getItem(PENDING_GUEST_UID_KEY);
+                if (savedGuestUid && resUser && savedGuestUid !== resUser.uid) {
+                    migrateStorageData(savedGuestUid, resUser.uid);
+                    syncToFirestore(resUser.uid, resUser);
+                }
+                localStorage.removeItem(PENDING_GUEST_UID_KEY);
+                if (resUser && resUser.email) {
+                    saveAccountToDevice(resUser.email);
+                }
+                closeSidebar();
+            };
+
+            const triggerRedirectFallback = () => {
+                isGoogleAuthInProgress = true;
+                if (mode === 'link' && activeUser && activeUser.isAnonymous) {
+                    activeUser.linkWithRedirect(provider).catch(() => {
+                        isGoogleAuthInProgress = false;
+                    });
+                } else {
+                    auth.signInWithRedirect(provider).catch(() => {
+                        isGoogleAuthInProgress = false;
+                    });
+                }
+            };
+
+            const handleAuthError = (error) => {
+                isGoogleAuthInProgress = false;
+                if (error.code === 'auth/cancelled-popup-request') {
+                    return;
+                }
+                if (error.code === 'auth/popup-closed-by-user') {
+                    localStorage.removeItem(PENDING_OAUTH_ACTION_KEY);
+                    return;
+                }
+                if (mode === 'link' && (error.code === 'auth/credential-already-in-use' || error.code === 'auth/provider-already-linked')) {
+                    isGoogleAuthInProgress = true;
+                    auth.signInWithPopup(provider)
+                        .then(res => finishSuccess(res.user))
+                        .catch(err => {
+                            isGoogleAuthInProgress = false;
+                            if (err.code === 'auth/popup-blocked' || err.code === 'auth/operation-not-supported-in-this-environment') {
+                                triggerRedirectFallback();
+                                return;
+                            }
+                            if (err.code !== 'auth/popup-closed-by-user' && err.code !== 'auth/cancelled-popup-request') {
+                                showAuthError("Gagal ganti akun Gmail: " + err.message);
+                            }
+                        });
+                    return;
+                }
+                if (error.code === 'auth/popup-blocked' || error.code === 'auth/operation-not-supported-in-this-environment') {
+                    triggerRedirectFallback();
+                    return;
+                }
+                showAuthError("Gagal proses Gmail: " + error.message);
+            };
+
+            if (isWebViewOrRestrictedEnvironment()) {
+                triggerRedirectFallback();
+                return;
+            }
+
+            if (mode === 'link' && activeUser && activeUser.isAnonymous) {
+                activeUser.linkWithPopup(provider)
+                    .then(res => finishSuccess(res.user))
+                    .catch(handleAuthError);
+            } else {
+                auth.signInWithPopup(provider)
+                    .then(res => finishSuccess(res.user))
+                    .catch(handleAuthError);
+            }
+        }
+
+        function loginWithGmail(forceSwitch = false) {
+            const user = auth.currentUser;
+            const guestUid = (user && user.isAnonymous ? user.uid : null) || localStorage.getItem(PENDING_GUEST_UID_KEY);
+            const mode = (!forceSwitch && user && user.isAnonymous) ? 'link' : 'signin';
+            runGoogleAuthWithFallback(mode, guestUid);
+        }
+
+        function upgradeGuestToGmail() {
+            const user = auth.currentUser;
+            const guestUid = (user && user.isAnonymous ? user.uid : null) || localStorage.getItem(PENDING_GUEST_UID_KEY);
+            runGoogleAuthWithFallback('link', guestUid);
+        }
+
+        function switchGmailAccount() {
+            const user = auth.currentUser;
+            const guestUid = (user && user.isAnonymous ? user.uid : null) || localStorage.getItem(PENDING_GUEST_UID_KEY);
+            runGoogleAuthWithFallback('switch', guestUid);
+        }
+
+        auth.getRedirectResult()
+            .then(result => {
+                localStorage.removeItem(PENDING_OAUTH_ACTION_KEY);
+                const savedGuestUid = localStorage.getItem(PENDING_GUEST_UID_KEY);
+                if (result && result.user) {
+                    if (savedGuestUid && savedGuestUid !== result.user.uid) {
+                        migrateStorageData(savedGuestUid, result.user.uid);
+                    }
+                    localStorage.removeItem(PENDING_GUEST_UID_KEY);
+                    if (result.user.email) {
+                        saveAccountToDevice(result.user.email);
+                    }
+                }
+            })
+            .catch(() => {
+                localStorage.removeItem(PENDING_OAUTH_ACTION_KEY);
+            });
 
         function readLocalUserSnapshot(uid) {
             return {
@@ -836,84 +955,20 @@
             });
         }
 
-        function finalizeGmailAccountChange(userObj, guestUid) {
-            if (!userObj) return;
-            if (guestUid && guestUid !== userObj.uid) {
-                migrateStorageData(guestUid, userObj.uid);
-                localStorage.removeItem(PENDING_GUEST_UID_KEY);
-            }
-            if (userObj.email) {
-                saveAccountToDevice(userObj.email);
-            }
-            editingId = null;
-            currentStorageUid = userObj.uid;
-            updateGuestUIState(false, userObj.email || "Akun Gmail");
-            loadUserData(userObj);
-            if (guestUid && guestUid !== userObj.uid) {
-                syncToFirestore(userObj.uid, userObj);
-            }
-            closeSidebar();
-        }
-
-        function connectOrSwitchGmail() {
-            const user = auth.currentUser;
-            const guestUid = (user && user.isAnonymous ? user.uid : null) || localStorage.getItem(PENDING_GUEST_UID_KEY);
-            if (guestUid) {
-                localStorage.setItem(PENDING_GUEST_UID_KEY, guestUid);
-            }
-
-            const provider = createGoogleProvider();
-
-            if (user && user.isAnonymous) {
-                user.linkWithPopup(provider)
-                    .then(result => {
-                        finalizeGmailAccountChange(result.user, guestUid);
-                    })
-                    .catch(error => {
-                        if (error.code === 'auth/credential-already-in-use' || error.code === 'auth/provider-already-linked') {
-                            auth.signInWithPopup(provider)
-                                .then(res => {
-                                    finalizeGmailAccountChange(res.user, guestUid);
-                                })
-                                .catch(err => {
-                                    if (err.code !== 'auth/popup-closed-by-user') {
-                                        alert("Gagal ganti akun Gmail: " + err.message);
-                                    }
-                                });
-                        } else if (error.code !== 'auth/popup-closed-by-user') {
-                            alert("Gagal menghubungkan Gmail: " + error.message);
-                        }
-                    });
-                return;
-            }
-
-            auth.signInWithPopup(provider)
-                .then(result => {
-                    finalizeGmailAccountChange(result.user, null);
-                })
-                .catch(error => {
-                    if (error.code !== 'auth/popup-closed-by-user') {
-                        alert("Gagal mengganti akun Gmail: " + error.message);
-                    }
-                });
-        }
-
-        function updateGuestUIState(isGuest, labelText) {
+        function updateGuestUIState(isGuest, labelText, hasSession = false) {
             isGuestSession = Boolean(isGuest);
-            const guestBanner = document.getElementById('guestSaveBanner');
+            const accountBox = document.getElementById('accountActionBox');
+            const guestBannerText = document.getElementById('guestSaveBannerText');
+            const sidebarSaveBtn = document.getElementById('sidebarSaveGmailBtn');
             const headerGmailBtn = document.getElementById('headerGmailSaveBtn');
-            const headerGmailBtnText = document.getElementById('headerGmailBtnText');
-            const sidebarGmailBtnText = document.getElementById('sidebarGmailBtnText');
+            const headerSwitchBtn = document.getElementById('headerSwitchGmailBtn');
             const activeUserEmail = document.getElementById('activeUserEmail');
 
-            if (guestBanner) guestBanner.classList.toggle('hidden', !isGuestSession);
-            if (headerGmailBtn) headerGmailBtn.classList.remove('hidden');
-            if (headerGmailBtnText) {
-                headerGmailBtnText.textContent = isGuestSession ? "Simpan Gmail" : "Ganti Gmail";
-            }
-            if (sidebarGmailBtnText) {
-                sidebarGmailBtnText.textContent = isGuestSession ? "Simpan / Ganti Gmail" : "Ganti Akun Gmail";
-            }
+            if (accountBox) accountBox.classList.toggle('hidden', !hasSession);
+            if (guestBannerText) guestBannerText.classList.toggle('hidden', !isGuestSession);
+            if (sidebarSaveBtn) sidebarSaveBtn.classList.toggle('hidden', !isGuestSession);
+            if (headerGmailBtn) headerGmailBtn.classList.toggle('hidden', !isGuestSession);
+            if (headerSwitchBtn) headerSwitchBtn.classList.toggle('hidden', !hasSession);
             if (activeUserEmail) activeUserEmail.textContent = labelText || '';
             setSyncBadge(isGuestSession ? "Mode Tamu (Lokal)" : "Cloud Synced");
         }
@@ -1015,12 +1070,11 @@
         auth.onAuthStateChanged(user => {
             const authScreen = document.getElementById('authScreen');
             const menuToggleBtn = document.getElementById('menuToggleBtn');
-            const headerGmailBtn = document.getElementById('headerGmailSaveBtn');
             if (user) {
                 currentStorageUid = user.uid;
                 if (user.isAnonymous) {
                     localStorage.setItem(PENDING_GUEST_UID_KEY, user.uid);
-                    updateGuestUIState(true, "Mode Tamu");
+                    updateGuestUIState(true, "Mode Tamu", true);
                 } else {
                     const pendingGuestUid = localStorage.getItem(PENDING_GUEST_UID_KEY);
                     if (pendingGuestUid && pendingGuestUid !== user.uid) {
@@ -1030,7 +1084,7 @@
                     if (user.email) {
                         saveAccountToDevice(user.email);
                     }
-                    updateGuestUIState(false, user.email || "Akun");
+                    updateGuestUIState(false, user.email || "Akun", true);
                 }
                 authScreen.classList.add('hidden');
                 if (menuToggleBtn) menuToggleBtn.classList.remove('hidden');
@@ -1038,8 +1092,7 @@
             } else {
                 currentStorageUid = null;
                 closeSidebar();
-                updateGuestUIState(false, '');
-                if (headerGmailBtn) headerGmailBtn.classList.add('hidden');
+                updateGuestUIState(false, '', false);
                 renderSavedAccounts();
                 authScreen.classList.remove('hidden');
                 if (menuToggleBtn) menuToggleBtn.classList.add('hidden');
@@ -1104,6 +1157,7 @@
         function resetSessionStateForAuth() {
             currentStorageUid = null;
             isGuestSession = false;
+            isGoogleAuthInProgress = false;
             transactions = [];
             receivables = [];
             savingsGoals = [];
