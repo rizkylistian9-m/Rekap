@@ -35,7 +35,7 @@
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
 </head>
-<body class="bg-gray-100 dark:bg-gray-900 text-gray-800 dark:text-gray-100 flex flex-col pb-24 transition-colors duration-200 w-full overflow-x-hidden min-h-screen">
+<body class="bg-gray-100 dark:bg-gray-900 text-gray-800 dark:text-gray-100 flex flex-col pb-8 transition-colors duration-200 w-full overflow-x-hidden min-h-screen">
 
     <!-- ================= Halaman Login / Auth ================= -->
     <div id="authScreen" class="fixed inset-0 bg-gray-900 z-50 flex items-center justify-center p-4 hidden">
@@ -81,9 +81,64 @@
         </div>
     </div>
 
+    <!-- ================= Sidebar Menu Samping ================= -->
+    <div id="sidebarOverlay" onclick="closeSidebar()" class="fixed inset-0 bg-black/50 z-50 hidden transition-opacity"></div>
+    <aside id="sideDrawer" class="fixed top-0 left-0 h-full w-64 max-w-[80vw] bg-white dark:bg-gray-800 border-r dark:border-gray-700 z-50 -translate-x-full transition-transform duration-200 flex flex-col justify-between shadow-2xl">
+        <div class="p-4 space-y-4 overflow-y-auto">
+            <div class="flex items-center justify-between border-b dark:border-gray-700 pb-3">
+                <div class="flex items-center gap-2">
+                    <div class="w-8 h-8 rounded-full bg-gradient-to-tr from-blue-600 to-sky-400 flex items-center justify-center text-white shadow-sm">
+                        <i class="fa-solid fa-wallet text-xs"></i>
+                    </div>
+                    <div>
+                        <h2 class="font-bold text-sm text-blue-600 dark:text-blue-400 leading-tight">KI-KAP</h2>
+                        <p id="txt-menu-label" class="text-[10px] text-gray-400">Menu Navigasi</p>
+                    </div>
+                </div>
+                <button type="button" onclick="closeSidebar()" class="text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 p-1.5 rounded-lg" title="Tutup Menu">
+                    <i class="fa-solid fa-xmark text-sm"></i>
+                </button>
+            </div>
+
+            <nav class="space-y-1">
+                <button type="button" onclick="selectSidebarTab('harian')" class="nav-btn w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs font-medium text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700/70 transition-colors text-left" data-tab="harian">
+                    <i class="fa-solid fa-calendar-day w-4 text-center text-sm"></i>
+                    <span id="txt-nav-harian">Harian</span>
+                </button>
+                <button type="button" onclick="selectSidebarTab('bulanan')" class="nav-btn w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs font-medium text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700/70 transition-colors text-left" data-tab="bulanan">
+                    <i class="fa-solid fa-calendar-alt w-4 text-center text-sm"></i>
+                    <span id="txt-nav-bulanan">Bulanan</span>
+                </button>
+                <button type="button" onclick="selectSidebarTab('tahunan')" class="nav-btn w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs font-medium text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700/70 transition-colors text-left" data-tab="tahunan">
+                    <i class="fa-solid fa-calendar w-4 text-center text-sm"></i>
+                    <span id="txt-nav-tahunan">Tahunan</span>
+                </button>
+                <button type="button" onclick="selectSidebarTab('target')" class="nav-btn w-full flex items-center justify-between px-3 py-2.5 rounded-xl text-xs font-medium text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700/70 transition-colors text-left" data-tab="target">
+                    <span class="flex items-center gap-3">
+                        <i class="fa-solid fa-bullseye w-4 text-center text-sm"></i>
+                        <span id="txt-nav-target">Target</span>
+                    </span>
+                    <span id="goalBadge" class="bg-blue-600 text-white text-[9px] px-1.5 py-0.5 rounded-full font-bold">0</span>
+                </button>
+                <button type="button" onclick="selectSidebarTab('grafik')" class="nav-btn w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs font-medium text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700/70 transition-colors text-left" data-tab="grafik">
+                    <i class="fa-solid fa-chart-pie w-4 text-center text-sm"></i>
+                    <span id="txt-nav-grafik">Grafik</span>
+                </button>
+            </nav>
+        </div>
+
+        <div class="p-3 border-t dark:border-gray-700 text-[10px] text-gray-400 flex items-center justify-between">
+            <span>KI-KAP PWA</span>
+            <span id="activeUserEmail" class="truncate max-w-[130px] font-medium"></span>
+        </div>
+    </aside>
+
     <!-- ================= Aplikasi Utama ================= -->
     <header class="bg-white dark:bg-gray-800 border-b dark:border-gray-700 px-3 py-2.5 sticky top-0 z-40 flex items-center justify-between shadow-sm w-full">
         <div class="flex items-center gap-2">
+            <button id="menuToggleBtn" type="button" onclick="openSidebar()" class="bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 p-1.5 rounded-lg text-xs w-8 h-8 flex items-center justify-center flex-shrink-0 hidden" title="Buka Menu">
+                <i class="fa-solid fa-bars text-sm"></i>
+            </button>
             <div class="w-8 h-8 rounded-full bg-gradient-to-tr from-blue-600 to-sky-400 flex items-center justify-center text-white shadow-sm border border-blue-200 dark:border-blue-800 flex-shrink-0">
                 <i class="fa-solid fa-wallet text-xs"></i>
             </div>
@@ -326,31 +381,6 @@
         </div>
     </main>
 
-    <!-- Bottom Navigation Bar -->
-    <nav id="bottomNav" class="fixed bottom-0 inset-x-0 bg-white dark:bg-gray-800 border-t dark:border-gray-700 flex justify-around py-2 z-50 shadow-lg w-full hidden">
-        <button onclick="switchTab('harian')" class="nav-btn flex flex-col items-center py-1 px-3 text-gray-400 transition-colors" data-tab="harian">
-            <i class="fa-solid fa-calendar-day text-sm"></i>
-            <span id="txt-nav-harian" class="text-[9px] mt-0.5 font-medium">Harian</span>
-        </button>
-        <button onclick="switchTab('bulanan')" class="nav-btn flex flex-col items-center py-1 px-3 text-gray-400 transition-colors" data-tab="bulanan">
-            <i class="fa-solid fa-calendar-alt text-sm"></i>
-            <span id="txt-nav-bulanan" class="text-[9px] mt-0.5 font-medium">Bulanan</span>
-        </button>
-        <button onclick="switchTab('tahunan')" class="nav-btn flex flex-col items-center py-1 px-3 text-gray-400 transition-colors" data-tab="tahunan">
-            <i class="fa-solid fa-calendar text-sm"></i>
-            <span id="txt-nav-tahunan" class="text-[9px] mt-0.5 font-medium">Tahunan</span>
-        </button>
-        <button onclick="switchTab('target')" class="nav-btn flex flex-col items-center py-1 px-3 text-gray-400 transition-colors relative" data-tab="target">
-            <i class="fa-solid fa-bullseye text-sm"></i>
-            <span id="txt-nav-target" class="text-[9px] mt-0.5 font-medium">Target</span>
-            <span id="goalBadge" class="absolute top-0.5 right-2 bg-blue-600 text-white text-[8px] px-1 rounded-full font-bold">0</span>
-        </button>
-        <button onclick="switchTab('grafik')" class="nav-btn flex flex-col items-center py-1 px-3 text-gray-400 transition-colors" data-tab="grafik">
-            <i class="fa-solid fa-chart-pie text-sm"></i>
-            <span id="txt-nav-grafik" class="text-[9px] mt-0.5 font-medium">Grafik</span>
-        </button>
-    </nav>
-
     <!-- JavaScript Logika Aplikasi & Firebase -->
     <script>
         const firebaseConfig = {
@@ -374,6 +404,7 @@
         let darkMode = false;
         let editingId = null;
         let isSignUpMode = false;
+        let currentTab = 'harian';
 
         let chartIncExpInstance = null;
         let chartExpCatInstance = null;
@@ -382,6 +413,7 @@
         const dict = {
             id: {
                 subtitle: "Keuangan Pintar & Praktis",
+                menuLabel: "Menu Navigasi",
                 savedAccLabel: "Akun Tersimpan di Perangkat",
                 switchAccTitle: "Ganti Akun", logoutTitle: "Keluar",
                 harian: "Rekap Harian", harianDesc: "Kelola catatan harianmu",
@@ -400,12 +432,13 @@
                 grafik: "Grafik Analitik", grafikDesc: "Visualisasi data keuanganmu",
                 c1: "Pemasukan vs Pengeluaran", c2: "Volume Pengeluaran per Kategori", c3: "Volume Pemasukan per Kategori",
                 navHarian: "Harian", navBulanan: "Bulanan", navTahunan: "Tahunan", navTarget: "Target", navGrafik: "Grafik",
-                optIn: ["Dana Awal", "Gaji", "Bonus", "Penjualan", "Investasi", "Hadiah / THR", "Lainnya"],
-                optOut: ["Makanan & Minuman", "Transportasi", "Belanja", "Tagihan", "Hiburan", "Kesehatan", "Pendidikan", "Lainnya"],
+                optIn: ["Dana Awal", "Gaji", "Bonus", "Penjualan", "Investasi", "Hadiah / THR", "Hutang / Piutang", "Lainnya"],
+                optOut: ["Makanan & Minuman", "Transportasi", "Belanja", "Tagihan", "Hiburan", "Kesehatan", "Pendidikan", "Hutang / Piutang", "Lainnya"],
                 confReset: "Reset seluruh data transaksi?"
             },
             en: {
                 subtitle: "Smart & Practical Finance",
+                menuLabel: "Navigation Menu",
                 savedAccLabel: "Saved Accounts on Device",
                 switchAccTitle: "Switch Account", logoutTitle: "Log Out",
                 harian: "Daily Summary", harianDesc: "Manage your daily notes",
@@ -424,12 +457,13 @@
                 grafik: "Analytics Charts", grafikDesc: "Visualize your financial data",
                 c1: "Income vs Expense", c2: "Expense Volume by Category", c3: "Income Volume by Category",
                 navHarian: "Daily", navBulanan: "Monthly", navTahunan: "Yearly", navTarget: "Goals", navGrafik: "Charts",
-                optIn: ["Opening Balance", "Salary", "Bonus", "Sales", "Investment", "Gift / THR", "Other"],
-                optOut: ["Food & Drink", "Transport", "Shopping", "Bills", "Entertainment", "Health", "Education", "Other"],
+                optIn: ["Opening Balance", "Salary", "Bonus", "Sales", "Investment", "Gift / THR", "Debt / Receivable", "Other"],
+                optOut: ["Food & Drink", "Transport", "Shopping", "Bills", "Entertainment", "Health", "Education", "Debt / Receivable", "Other"],
                 confReset: "Reset all transaction data?"
             },
             jv: {
                 subtitle: "Keuangan Pintar & Praktis",
+                menuLabel: "Menu Navigasi",
                 savedAccLabel: "Akun Kesimpen ing Piranti",
                 switchAccTitle: "Ganti Akun", logoutTitle: "Metu",
                 harian: "Rekap Dina Iki", harianDesc: "Kelola catetan dinanmu",
@@ -448,12 +482,13 @@
                 grafik: "Grafik Analitik", grafikDesc: "Visualisasi data keuanganmu",
                 c1: "Pemasukan vs Pengeluaran", c2: "Volume Pengeluaran per Kategori", c3: "Volume Pemasukan per Kategori",
                 navHarian: "Dina Iki", navBulanan: "Sasi", navTahunan: "Taun", navTarget: "Target", navGrafik: "Grafik",
-                optIn: ["Dana Awal", "Gaji", "Bonus", "Hasil Dol", "Investasi", "Hadiah / THR", "Liyane"],
-                optOut: ["Panganan & Ngombe", "Transportasi", "Blanja", "Tagihan", "Hiburan", "Kesehatan", "Pendidikan", "Liyane"],
+                optIn: ["Dana Awal", "Gaji", "Bonus", "Hasil Dol", "Investasi", "Hadiah / THR", "Utang / Piutang", "Liyane"],
+                optOut: ["Panganan & Ngombe", "Transportasi", "Blanja", "Tagihan", "Hiburan", "Kesehatan", "Pendidikan", "Utang / Piutang", "Liyane"],
                 confReset: "Reset kabeh data transaksi?"
             },
             su: {
                 subtitle: "Keuangan Pintar & Praktis",
+                menuLabel: "Ménu Navigasi",
                 savedAccLabel: "Akun Kasimpen dina Parangkat",
                 switchAccTitle: "Ganti Akun", logoutTitle: "Kaluar",
                 harian: "Rekap Harian", harianDesc: "Polahkeun catetan poéan anjeun",
@@ -472,12 +507,13 @@
                 grafik: "Grafik Analitik", grafikDesc: "Visualisasi data keuangan anjeun",
                 c1: "Pasukan vs Pangeluaran", c2: "Volume Pangeluaran per Kategori", c3: "Volume Pasukan per Kategori",
                 navHarian: "Poéan", navBulanan: "Bulanan", navTahunan: "Taunan", navTarget: "Target", navGrafik: "Grafik",
-                optIn: ["Dana Awal", "Gaji", "Bonus", "Jualan", "Investasi", "Hadiah / THR", "Lianna"],
-                optOut: ["Dahar & Inum", "Transportasi", "Balanja", "Tagihan", "Hiburan", "Kasehatan", "Pendidikan", "Lianna"],
+                optIn: ["Dana Awal", "Gaji", "Bonus", "Jualan", "Investasi", "Hadiah / THR", "Hutang / Piutang", "Lianna"],
+                optOut: ["Dahar & Inum", "Transportasi", "Balanja", "Tagihan", "Hiburan", "Kasehatan", "Pendidikan", "Hutang / Piutang", "Lianna"],
                 confReset: "Reset sadaya data transaksi?"
             },
             ms: {
                 subtitle: "Kewangan Pintar & Praktikal",
+                menuLabel: "Menu Navigasi",
                 savedAccLabel: "Akaun Tersimpan pada Peranti",
                 switchAccTitle: "Tukar Akaun", logoutTitle: "Keluar",
                 harian: "Rekod Harian", harianDesc: "Uruskan nota harian anda",
@@ -496,12 +532,13 @@
                 grafik: "Carta Analisis", grafikDesc: "Visualisasikan data kewangan anda",
                 c1: "Pendapatan vs Perbelanjaan", c2: "Jumlah Perbelanjaan mengikut Kategori", c3: "Jumlah Pendapatan mengikut Kategori",
                 navHarian: "Harian", navBulanan: "Bulanan", navTahunan: "Tahunan", navTarget: "Matlamat", navGrafik: "Carta",
-                optIn: ["Dana Awal", "Gaji", "Bonus", "Jualan", "Pelaburan", "Hadiah / THR", "Lain-lain"],
-                optOut: ["Makanan & Minuman", "Pengangkutan", "Belanja", "Bil", "Hiburan", "Kesihatan", "Pendidikan", "Lain-lain"],
+                optIn: ["Dana Awal", "Gaji", "Bonus", "Jualan", "Pelaburan", "Hadiah / THR", "Hutang / Piutang", "Lain-lain"],
+                optOut: ["Makanan & Minuman", "Pengangkutan", "Belanja", "Bil", "Hiburan", "Kesihatan", "Pendidikan", "Hutang / Piutang", "Lain-lain"],
                 confReset: "Reset semua data transaksi?"
             },
             es: {
                 subtitle: "Finanzas Inteligentes y Prácticas",
+                menuLabel: "Menú de Navegación",
                 savedAccLabel: "Cuentas Guardadas en el Dispositivo",
                 switchAccTitle: "Cambiar Cuenta", logoutTitle: "Cerrar Sesión",
                 harian: "Resumen Diario", harianDesc: "Gestiona tus notas diarias",
@@ -520,12 +557,13 @@
                 grafik: "Gráficos Analíticos", grafikDesc: "Visualiza tus datos financieros",
                 c1: "Ingresos vs Gastos", c2: "Volumen de Gastos por Categoría", c3: "Volumen de Ingresos por Categoría",
                 navHarian: "Diario", navBulanan: "Mensual", navTahunan: "Anual", navTarget: "Metas", navGrafik: "Gráficos",
-                optIn: ["Saldo Inicial", "Salario", "Bonus", "Ventas", "Inversión", "Regalo / THR", "Otros"],
-                optOut: ["Comida y Bebida", "Transporte", "Compras", "Facturas", "Entretenimiento", "Salud", "Educación", "Otros"],
+                optIn: ["Saldo Inicial", "Salario", "Bonus", "Ventas", "Inversión", "Regalo / THR", "Deuda / Por Cobrar", "Otros"],
+                optOut: ["Comida y Bebida", "Transporte", "Compras", "Facturas", "Entretenimiento", "Salud", "Educación", "Deuda / Por Cobrar", "Otros"],
                 confReset: "¿Reiniciar todos los datos de transacciones?"
             },
             zh: {
                 subtitle: "智能与实用财务",
+                menuLabel: "导航菜单",
                 savedAccLabel: "本机已保存账号",
                 switchAccTitle: "切换账号", logoutTitle: "退出",
                 harian: "每日摘要", harianDesc: "管理您的日常记账",
@@ -544,12 +582,13 @@
                 grafik: "分析图表", grafikDesc: "可视化您的财务数据",
                 c1: "收入对比支出", c2: "各分类支出金额", c3: "各分类收入金额",
                 navHarian: "每日", navBulanan: "每月", navTahunan: "年度", navTarget: "目标", navGrafik: "图表",
-                optIn: ["期初资金", "薪资", "奖金", "销售", "投资", "礼金 / 节日津贴", "其他"],
-                optOut: ["餐饮", "交通", "购物", "账单", "娱乐", "健康", "教育", "其他"],
+                optIn: ["期初资金", "薪资", "奖金", "销售", "投资", "礼金 / 节日津贴", "借贷 / 应收", "其他"],
+                optOut: ["餐饮", "交通", "购物", "账单", "娱乐", "健康", "教育", "借贷 / 应收", "其他"],
                 confReset: "确定重置所有交易数据吗？"
             },
             ar: {
                 subtitle: "مالية ذكية وواضحة",
+                menuLabel: "قائمة التنقل",
                 savedAccLabel: "الحسابات المحفوظة على الجهاز",
                 switchAccTitle: "تبديل الحساب", logoutTitle: "خروج",
                 harian: "الملخص اليومي", harianDesc: "إدارة ملاحظاتك اليومية",
@@ -568,11 +607,36 @@
                 grafik: "الرسوم البيانية", grafikDesc: "تصور بياناتك المالية",
                 c1: "الدخل مقابل المصروفات", c2: "حجم المصروفات حسب الفئة", c3: "حجم الدخل حسب الفئة",
                 navHarian: "اليومي", navBulanan: "الشهري", navTahunan: "السنوي", navTarget: "الأهداف", navGrafik: "الرسوم",
-                optIn: ["الرصيد الافتتاحي", "الراتب", "مكافأة", "مبيعات", "استثمار", "هدية / عيدية", "أخرى"],
-                optOut: ["طعام وشراب", "مواصلات", "تسوق", "فواتير", "ترفيه", "صحة", "تعليم", "أخرى"],
+                optIn: ["الرصيد الافتتاحي", "الراتب", "مكافأة", "مبيعات", "استثمار", "هدية / عيدية", "دين / مستحق", "أخرى"],
+                optOut: ["طعام وشراب", "مواصلات", "تسوق", "فواتير", "ترفيه", "صحة", "تعليم", "دين / مستحق", "أخرى"],
                 confReset: "هل تريد إعادة ضبط جميع بيانات المعاملات؟"
             }
         };
+
+        function openSidebar() {
+            const drawer = document.getElementById('sideDrawer');
+            const overlay = document.getElementById('sidebarOverlay');
+            overlay.classList.remove('hidden');
+            requestAnimationFrame(() => {
+                drawer.classList.remove('-translate-x-full');
+            });
+        }
+
+        function closeSidebar() {
+            const drawer = document.getElementById('sideDrawer');
+            const overlay = document.getElementById('sidebarOverlay');
+            drawer.classList.add('-translate-x-full');
+            setTimeout(() => {
+                if (drawer.classList.contains('-translate-x-full')) {
+                    overlay.classList.add('hidden');
+                }
+            }, 200);
+        }
+
+        function selectSidebarTab(tabId) {
+            closeSidebar();
+            switchTab(tabId);
+        }
 
         function getSavedAccounts() {
             try {
@@ -645,16 +709,22 @@
 
         auth.onAuthStateChanged(user => {
             const authScreen = document.getElementById('authScreen');
-            const bottomNav = document.getElementById('bottomNav');
+            const menuToggleBtn = document.getElementById('menuToggleBtn');
+            const activeUserEmail = document.getElementById('activeUserEmail');
             if (user) {
-                if (user.email) saveAccountToDevice(user.email);
+                if (user.email) {
+                    saveAccountToDevice(user.email);
+                    if (activeUserEmail) activeUserEmail.textContent = user.email;
+                }
                 authScreen.classList.add('hidden');
-                bottomNav.classList.remove('hidden');
+                if (menuToggleBtn) menuToggleBtn.classList.remove('hidden');
                 loadUserData(user.uid);
             } else {
+                closeSidebar();
+                if (activeUserEmail) activeUserEmail.textContent = '';
                 renderSavedAccounts();
                 authScreen.classList.remove('hidden');
-                bottomNav.classList.add('hidden');
+                if (menuToggleBtn) menuToggleBtn.classList.add('hidden');
             }
         });
 
@@ -724,6 +794,7 @@
             savingsGoals = [];
             editingId = null;
             isSignUpMode = false;
+            currentTab = 'harian';
 
             document.getElementById('authEmail').value = '';
             document.getElementById('authPassword').value = '';
@@ -739,7 +810,7 @@
             auth.signOut().catch(() => {
                 renderSavedAccounts();
                 document.getElementById('authScreen').classList.remove('hidden');
-                document.getElementById('bottomNav').classList.add('hidden');
+                document.getElementById('menuToggleBtn').classList.add('hidden');
             });
         }
 
@@ -805,6 +876,7 @@
         function applyLanguage() {
             const t = dict[lang] || dict['id'];
             document.getElementById('txt-subtitle').textContent = t.subtitle;
+            document.getElementById('txt-menu-label').textContent = t.menuLabel;
             document.getElementById('switchAccBtn').title = t.switchAccTitle;
             document.getElementById('logoutBtn').title = t.logoutTitle;
             renderSavedAccounts();
@@ -922,16 +994,21 @@
             }).format(amount);
         }
 
+        function syncSidebarActiveState(tabId) {
+            document.querySelectorAll('.nav-btn').forEach(btn => {
+                btn.className = "nav-btn w-full flex items-center " + (btn.dataset.tab === 'target' ? "justify-between " : "") + "gap-3 px-3 py-2.5 rounded-xl text-xs font-medium text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700/70 transition-colors text-left";
+                if (btn.dataset.tab === tabId) {
+                    btn.className = "nav-btn w-full flex items-center " + (btn.dataset.tab === 'target' ? "justify-between " : "") + "gap-3 px-3 py-2.5 rounded-xl text-xs font-bold bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 transition-colors text-left";
+                }
+            });
+        }
+
         function switchTab(tabId) {
+            currentTab = tabId;
             document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
             document.getElementById(`content-${tabId}`).classList.remove('hidden');
 
-            document.querySelectorAll('.nav-btn').forEach(btn => {
-                btn.className = "nav-btn flex flex-col items-center py-1 px-3 text-gray-400 dark:text-gray-400 transition-colors";
-                if(btn.dataset.tab === tabId) {
-                    btn.className = "nav-btn flex flex-col items-center py-1 px-3 text-blue-600 dark:text-blue-400 font-bold transition-colors";
-                }
-            });
+            syncSidebarActiveState(tabId);
             window.scrollTo(0, 0);
             renderApp();
         }
@@ -1163,7 +1240,7 @@
             });
 
             const incCatEntries = Object.entries(incCats);
-            const incPalette = ['#0284c7', '#0ea5e9', '#38bdf8', '#2563eb', '#06b6d4', '#14b8a6', '#6366f1'];
+            const incPalette = ['#0284c7', '#0ea5e9', '#38bdf8', '#2563eb', '#06b6d4', '#14b8a6', '#6366f1', '#8b5cf6'];
             const incColors = incCatEntries.map((_, i) => incPalette[i % incPalette.length]);
 
             const ctx3 = document.getElementById('chartBarIncCat').getContext('2d');
