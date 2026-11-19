@@ -467,6 +467,7 @@
         const db = firebase.firestore();
 
         const SAVED_ACCOUNTS_KEY = 'kikap_saved_accounts';
+        const PENDING_GUEST_UID_KEY = 'kikap_pending_guest_uid';
         let currentStorageUid = null;
         let isGuestSession = false;
         let transactions = [];
@@ -749,6 +750,12 @@
             errBox.classList.remove('hidden');
         }
 
+        function createGoogleProvider() {
+            const provider = new firebase.auth.GoogleAuthProvider();
+            provider.setCustomParameters({ prompt: 'select_account' });
+            return provider;
+        }
+
         function loginAsGuest() {
             document.getElementById('authError').classList.add('hidden');
             auth.signInAnonymously().catch(error => {
@@ -758,8 +765,7 @@
 
         function loginWithGmail() {
             document.getElementById('authError').classList.add('hidden');
-            const provider = new firebase.auth.GoogleAuthProvider();
-            provider.setCustomParameters({ prompt: 'select_account' });
+            const provider = createGoogleProvider();
             auth.signInWithPopup(provider).catch(error => {
                 showAuthError("Gagal login Gmail: " + error.message);
             });
@@ -829,9 +835,12 @@
 
         function upgradeGuestToGmail() {
             const user = auth.currentUser;
-            const guestUid = user && user.isAnonymous ? user.uid : null;
-            const provider = new firebase.auth.GoogleAuthProvider();
-            provider.setCustomParameters({ prompt: 'select_account' });
+            const guestUid = (user && user.isAnonymous ? user.uid : null) || localStorage.getItem(PENDING_GUEST_UID_KEY);
+            if (guestUid) {
+                localStorage.setItem(PENDING_GUEST_UID_KEY, guestUid);
+            }
+
+            const provider = createGoogleProvider();
 
             if (user && user.isAnonymous) {
                 user.linkWithPopup(provider)
@@ -841,6 +850,7 @@
                             migrateStorageData(guestUid, linkedUser.uid);
                             syncToFirestore(linkedUser.uid, linkedUser);
                         }
+                        localStorage.removeItem(PENDING_GUEST_UID_KEY);
                         if (linkedUser && linkedUser.email) {
                             saveAccountToDevice(linkedUser.email);
                         }
@@ -854,6 +864,7 @@
                                         migrateStorageData(guestUid, res.user.uid);
                                         syncToFirestore(res.user.uid, res.user);
                                     }
+                                    localStorage.removeItem(PENDING_GUEST_UID_KEY);
                                     if (res.user && res.user.email) {
                                         saveAccountToDevice(res.user.email);
                                     }
@@ -981,8 +992,14 @@
             if (user) {
                 currentStorageUid = user.uid;
                 if (user.isAnonymous) {
+                    localStorage.setItem(PENDING_GUEST_UID_KEY, user.uid);
                     updateGuestUIState(true, "Mode Tamu");
                 } else {
+                    const pendingGuestUid = localStorage.getItem(PENDING_GUEST_UID_KEY);
+                    if (pendingGuestUid && pendingGuestUid !== user.uid) {
+                        migrateStorageData(pendingGuestUid, user.uid);
+                    }
+                    localStorage.removeItem(PENDING_GUEST_UID_KEY);
                     if (user.email) {
                         saveAccountToDevice(user.email);
                     }
