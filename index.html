@@ -888,14 +888,16 @@
             renderApp();
         }
 
-        function updateCategoryOptions() {
+        function updateCategoryOptions(preferredCategory = null) {
             const type = document.getElementById('txType').value;
             const categorySelect = document.getElementById('txCategory');
-            const currentSelected = categorySelect.value;
             categorySelect.innerHTML = '';
 
             const t = dict[lang] || dict['id'];
-            let categories = type === 'Pemasukan' ? t.optIn : t.optOut;
+            const openingBalanceLabels = new Set(["Dana Awal", "Opening Balance", "Saldo Inicial", "期初资金", "الرصيد الافتتاحي"]);
+            let categories = type === 'Pemasukan'
+                ? [...t.optIn]
+                : t.optOut.filter(cat => !openingBalanceLabels.has(cat));
 
             categories.forEach(cat => {
                 let opt = document.createElement('option');
@@ -904,12 +906,10 @@
                 categorySelect.appendChild(opt);
             });
 
-            if (currentSelected && !categories.includes(currentSelected)) {
-                let opt = document.createElement('option');
-                opt.value = currentSelected;
-                opt.textContent = currentSelected;
-                categorySelect.appendChild(opt);
-                categorySelect.value = currentSelected;
+            if (preferredCategory && categories.includes(preferredCategory)) {
+                categorySelect.value = preferredCategory;
+            } else if (categories.length > 0) {
+                categorySelect.value = categories[0];
             }
         }
 
@@ -988,8 +988,7 @@
             editingId = id;
             document.getElementById('txDate').value = tx.date;
             document.getElementById('txType').value = tx.type;
-            updateCategoryOptions();
-            document.getElementById('txCategory').value = tx.category;
+            updateCategoryOptions(tx.category);
             document.getElementById('txDesc').value = tx.desc || '';
             document.getElementById('txt-amount-placeholder').value = tx.amount;
             
