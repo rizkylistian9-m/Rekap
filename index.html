@@ -112,13 +112,14 @@
                 </button>
             </div>
 
-            <!-- Banner Status Tamu & Tombol Simpan ke Gmail -->
+            <!-- Banner Status Tamu & Tombol Simpan / Ganti Gmail -->
             <div id="guestSaveBanner" class="bg-amber-50 dark:bg-amber-900/25 border border-amber-200 dark:border-amber-800/60 rounded-xl p-2.5 space-y-2 hidden">
                 <p class="text-[10px] font-semibold text-amber-800 dark:text-amber-300 leading-snug">
                     Kamu sedang pakai <b>Mode Tamu</b>. Login Gmail agar data tersimpan ke cloud.
                 </p>
-                <button type="button" onclick="upgradeGuestToGmail()" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg py-1.5 px-2 text-[10px] transition-colors flex items-center justify-center gap-1.5 shadow-sm">
-                    <i class="fa-brands fa-google"></i> Simpan Data & Login Gmail
+                <button id="sidebarGmailBtn" type="button" onclick="connectOrSwitchGmail()" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg py-1.5 px-2 text-[10px] transition-colors flex items-center justify-center gap-1.5 shadow-sm">
+                    <i class="fa-brands fa-google"></i>
+                    <span id="sidebarGmailBtnText">Simpan / Ganti Gmail</span>
                 </button>
             </div>
 
@@ -177,9 +178,9 @@
             </div>
         </div>
         <div class="flex items-center gap-1">
-            <button id="headerGmailSaveBtn" type="button" onclick="upgradeGuestToGmail()" class="bg-amber-100 hover:bg-amber-200 dark:bg-amber-900/40 text-amber-800 dark:text-amber-300 px-2 py-1 rounded-lg text-[10px] font-semibold flex items-center gap-1 flex-shrink-0 hidden" title="Login Gmail untuk menyimpan data ke cloud">
+            <button id="headerGmailSaveBtn" type="button" onclick="connectOrSwitchGmail()" class="bg-amber-100 hover:bg-amber-200 dark:bg-amber-900/40 text-amber-800 dark:text-amber-300 px-2 py-1 rounded-lg text-[10px] font-semibold flex items-center gap-1 flex-shrink-0 hidden" title="Simpan data atau ganti akun Gmail">
                 <i class="fa-brands fa-google text-red-500"></i>
-                <span>Simpan Gmail</span>
+                <span id="headerGmailBtnText">Simpan Gmail</span>
             </button>
             <select id="langSelect" onchange="changeLanguage()" class="bg-gray-100 dark:bg-gray-700 border dark:border-gray-600 rounded-lg px-1.5 py-1 text-[10px] font-medium focus:outline-none">
                 <option value="id">ID</option>
@@ -719,7 +720,7 @@
                 emptyTx: "لا توجد معاملات حتى الآن.",
                 bulanan: "الملخص الشهري", bulananDesc: "ملخص المعاملات الشهرية", mBal: "الرصيد",
                 mIncCat: "فئات الدخل", mExpCat: "فئات المصروفات", emptyInc: "لا يوجد دخل بعد.", emptyExp: "لا توجد مصروفات بعد.",
-                tahunan: "الملخص السنوي", tahunanDesc: "Analisis keuangan tahunan", yDetail: "التفصيل الشهري",
+                tahunan: "الملخص السنوي", tahunanDesc: "تحليل مالي سنوي", yDetail: "التفصيل الشهري",
                 thMonth: "الشهر", thIn: "وارد", thOut: "صادر", thNet: "الرصيد",
                 piutang: "سجل المستحقات", piutangDesc: "إجمالي المستحقات منفصل عن النقد الرئيسي؛ دخل سداد المستحق يقلل الرصيد المتبقي تلقائياً",
                 piutangActive: "إجمالي المستحقات النشطة", piutangPaid: "المحصل (سداد مستحق)",
@@ -767,7 +768,9 @@
             document.getElementById('authError').classList.add('hidden');
             const provider = createGoogleProvider();
             auth.signInWithPopup(provider).catch(error => {
-                showAuthError("Gagal login Gmail: " + error.message);
+                if (error.code !== 'auth/popup-closed-by-user') {
+                    showAuthError("Gagal login Gmail: " + error.message);
+                }
             });
         }
 
@@ -833,7 +836,26 @@
             });
         }
 
-        function upgradeGuestToGmail() {
+        function finalizeGmailAccountChange(userObj, guestUid) {
+            if (!userObj) return;
+            if (guestUid && guestUid !== userObj.uid) {
+                migrateStorageData(guestUid, userObj.uid);
+                localStorage.removeItem(PENDING_GUEST_UID_KEY);
+            }
+            if (userObj.email) {
+                saveAccountToDevice(userObj.email);
+            }
+            editingId = null;
+            currentStorageUid = userObj.uid;
+            updateGuestUIState(false, userObj.email || "Akun Gmail");
+            loadUserData(userObj);
+            if (guestUid && guestUid !== userObj.uid) {
+                syncToFirestore(userObj.uid, userObj);
+            }
+            closeSidebar();
+        }
+
+        function connectOrSwitchGmail() {
             const user = auth.currentUser;
             const guestUid = (user && user.isAnonymous ? user.uid : null) || localStorage.getItem(PENDING_GUEST_UID_KEY);
             if (guestUid) {
@@ -845,49 +867,53 @@
             if (user && user.isAnonymous) {
                 user.linkWithPopup(provider)
                     .then(result => {
-                        const linkedUser = result.user;
-                        if (guestUid && linkedUser) {
-                            migrateStorageData(guestUid, linkedUser.uid);
-                            syncToFirestore(linkedUser.uid, linkedUser);
-                        }
-                        localStorage.removeItem(PENDING_GUEST_UID_KEY);
-                        if (linkedUser && linkedUser.email) {
-                            saveAccountToDevice(linkedUser.email);
-                        }
-                        closeSidebar();
+                        finalizeGmailAccountChange(result.user, guestUid);
                     })
                     .catch(error => {
                         if (error.code === 'auth/credential-already-in-use' || error.code === 'auth/provider-already-linked') {
                             auth.signInWithPopup(provider)
                                 .then(res => {
-                                    if (guestUid && res.user) {
-                                        migrateStorageData(guestUid, res.user.uid);
-                                        syncToFirestore(res.user.uid, res.user);
-                                    }
-                                    localStorage.removeItem(PENDING_GUEST_UID_KEY);
-                                    if (res.user && res.user.email) {
-                                        saveAccountToDevice(res.user.email);
-                                    }
-                                    closeSidebar();
+                                    finalizeGmailAccountChange(res.user, guestUid);
                                 })
-                                .catch(err => alert("Gagal login Gmail: " + err.message));
-                        } else {
+                                .catch(err => {
+                                    if (err.code !== 'auth/popup-closed-by-user') {
+                                        alert("Gagal ganti akun Gmail: " + err.message);
+                                    }
+                                });
+                        } else if (error.code !== 'auth/popup-closed-by-user') {
                             alert("Gagal menghubungkan Gmail: " + error.message);
                         }
                     });
-            } else {
-                loginWithGmail();
+                return;
             }
+
+            auth.signInWithPopup(provider)
+                .then(result => {
+                    finalizeGmailAccountChange(result.user, null);
+                })
+                .catch(error => {
+                    if (error.code !== 'auth/popup-closed-by-user') {
+                        alert("Gagal mengganti akun Gmail: " + error.message);
+                    }
+                });
         }
 
         function updateGuestUIState(isGuest, labelText) {
             isGuestSession = Boolean(isGuest);
             const guestBanner = document.getElementById('guestSaveBanner');
             const headerGmailBtn = document.getElementById('headerGmailSaveBtn');
+            const headerGmailBtnText = document.getElementById('headerGmailBtnText');
+            const sidebarGmailBtnText = document.getElementById('sidebarGmailBtnText');
             const activeUserEmail = document.getElementById('activeUserEmail');
 
             if (guestBanner) guestBanner.classList.toggle('hidden', !isGuestSession);
-            if (headerGmailBtn) headerGmailBtn.classList.toggle('hidden', !isGuestSession);
+            if (headerGmailBtn) headerGmailBtn.classList.remove('hidden');
+            if (headerGmailBtnText) {
+                headerGmailBtnText.textContent = isGuestSession ? "Simpan Gmail" : "Ganti Gmail";
+            }
+            if (sidebarGmailBtnText) {
+                sidebarGmailBtnText.textContent = isGuestSession ? "Simpan / Ganti Gmail" : "Ganti Akun Gmail";
+            }
             if (activeUserEmail) activeUserEmail.textContent = labelText || '';
             setSyncBadge(isGuestSession ? "Mode Tamu (Lokal)" : "Cloud Synced");
         }
@@ -989,6 +1015,7 @@
         auth.onAuthStateChanged(user => {
             const authScreen = document.getElementById('authScreen');
             const menuToggleBtn = document.getElementById('menuToggleBtn');
+            const headerGmailBtn = document.getElementById('headerGmailSaveBtn');
             if (user) {
                 currentStorageUid = user.uid;
                 if (user.isAnonymous) {
@@ -1012,6 +1039,7 @@
                 currentStorageUid = null;
                 closeSidebar();
                 updateGuestUIState(false, '');
+                if (headerGmailBtn) headerGmailBtn.classList.add('hidden');
                 renderSavedAccounts();
                 authScreen.classList.remove('hidden');
                 if (menuToggleBtn) menuToggleBtn.classList.add('hidden');
