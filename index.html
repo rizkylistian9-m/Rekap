@@ -97,19 +97,23 @@
                 </button>
             </div>
 
-            <!-- Panel Akun: Simpan Gmail & Ganti Akun -->
+            <!-- Panel Akun: Simpan Gmail, Ganti Akun & Logout -->
             <div id="accountActionBox" class="bg-blue-50/80 dark:bg-blue-900/20 border border-blue-200/80 dark:border-blue-800/60 rounded-xl p-2.5 space-y-2 hidden">
                 <p id="guestSaveBannerText" class="text-[10px] font-semibold text-amber-800 dark:text-amber-300 leading-snug hidden">
                     Kamu sedang pakai <b>Mode Tamu</b>. Simpan ke Gmail agar data masuk ke cloud.
                 </p>
+                <button id="sidebarSaveGmailBtn" type="button" onclick="upgradeGuestToGmail()" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg py-1.5 px-2 text-[10px] transition-colors flex items-center justify-center gap-1 shadow-sm hidden">
+                    <i class="fa-brands fa-google"></i>
+                    <span>Simpan Gmail</span>
+                </button>
                 <div class="grid grid-cols-2 gap-1.5">
-                    <button id="sidebarSaveGmailBtn" type="button" onclick="upgradeGuestToGmail()" class="bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg py-1.5 px-2 text-[10px] transition-colors flex items-center justify-center gap-1 shadow-sm">
-                        <i class="fa-brands fa-google"></i>
-                        <span>Simpan Gmail</span>
-                    </button>
                     <button id="sidebarSwitchGmailBtn" type="button" onclick="switchGmailAccount()" class="bg-white dark:bg-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 text-gray-800 dark:text-gray-100 border border-gray-300 dark:border-gray-600 font-semibold rounded-lg py-1.5 px-2 text-[10px] transition-colors flex items-center justify-center gap-1 shadow-sm">
                         <i class="fa-solid fa-arrows-rotate text-[10px]"></i>
                         <span>Ganti Akun</span>
+                    </button>
+                    <button id="sidebarLogoutBtn" type="button" onclick="logoutUser()" class="bg-red-50 dark:bg-red-900/30 hover:bg-red-100 dark:hover:bg-red-900/50 text-red-600 dark:text-red-300 border border-red-200 dark:border-red-800/60 font-semibold rounded-lg py-1.5 px-2 text-[10px] transition-colors flex items-center justify-center gap-1 shadow-sm">
+                        <i class="fa-solid fa-right-from-bracket text-[10px]"></i>
+                        <span id="txt-logout-label">Logout</span>
                     </button>
                 </div>
             </div>
@@ -169,14 +173,6 @@
             </div>
         </div>
         <div class="flex items-center gap-1">
-            <button id="headerGmailSaveBtn" type="button" onclick="upgradeGuestToGmail()" class="bg-amber-100 hover:bg-amber-200 dark:bg-amber-900/40 text-amber-800 dark:text-amber-300 px-2 py-1 rounded-lg text-[10px] font-semibold flex items-center gap-1 flex-shrink-0 hidden" title="Simpan data tamu ke Gmail">
-                <i class="fa-brands fa-google text-red-500"></i>
-                <span>Simpan</span>
-            </button>
-            <button id="headerSwitchGmailBtn" type="button" onclick="switchGmailAccount()" class="bg-blue-50 hover:bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 px-2 py-1 rounded-lg text-[10px] font-semibold flex items-center gap-1 flex-shrink-0 hidden" title="Ganti Akun Gmail">
-                <i class="fa-solid fa-arrows-rotate text-[10px]"></i>
-                <span>Ganti</span>
-            </button>
             <select id="langSelect" onchange="changeLanguage()" class="bg-gray-100 dark:bg-gray-700 border dark:border-gray-600 rounded-lg px-1.5 py-1 text-[10px] font-medium focus:outline-none">
                 <option value="id">ID</option>
                 <option value="en">EN</option>
@@ -199,12 +195,6 @@
             </select>
             <button onclick="toggleDarkMode()" class="bg-gray-100 dark:bg-gray-700 p-1 rounded-lg text-xs w-7 h-7 flex items-center justify-center flex-shrink-0" title="Mode Gelap/Terang">
                 <i id="modeIconClass" class="fa-solid fa-sun text-xs"></i>
-            </button>
-            <button id="switchAccBtn" onclick="switchAccount()" class="bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 p-1 rounded-lg text-xs w-7 h-7 flex items-center justify-center flex-shrink-0" title="Ganti Akun">
-                <i class="fa-solid fa-user-pen text-xs"></i>
-            </button>
-            <button id="logoutBtn" onclick="logoutUser()" class="bg-red-50 dark:bg-red-900/30 text-red-500 p-1 rounded-lg text-xs w-7 h-7 flex items-center justify-center flex-shrink-0" title="Keluar">
-                <i class="fa-solid fa-right-from-bracket text-xs"></i>
             </button>
         </div>
     </header>
@@ -498,7 +488,7 @@
                 subtitle: "Keuangan Pintar & Praktis",
                 menuLabel: "Menu Navigasi",
                 savedAccLabel: "Akun Tersimpan di Perangkat",
-                switchAccTitle: "Ganti Akun", logoutTitle: "Keluar",
+                logoutLabel: "Logout",
                 harian: "Rekap Harian", harianDesc: "Kelola catatan harianmu",
                 inc: "Pemasukan", exp: "Pengeluaran", bal: "Sisa Saldo",
                 addTitle: "Tambah Transaksi", editTitle: "Edit Transaksi", labelDate: "Tanggal Transaksi",
@@ -528,7 +518,7 @@
                 subtitle: "Smart & Practical Finance",
                 menuLabel: "Navigation Menu",
                 savedAccLabel: "Saved Accounts on Device",
-                switchAccTitle: "Switch Account", logoutTitle: "Log Out",
+                logoutLabel: "Logout",
                 harian: "Daily Summary", harianDesc: "Manage your daily notes",
                 inc: "Income", exp: "Expense", bal: "Remaining Balance",
                 addTitle: "Add Transaction", editTitle: "Edit Transaction", labelDate: "Transaction Date",
@@ -558,7 +548,7 @@
                 subtitle: "Keuangan Pintar & Praktis",
                 menuLabel: "Menu Navigasi",
                 savedAccLabel: "Akun Kesimpen ing Piranti",
-                switchAccTitle: "Ganti Akun", logoutTitle: "Metu",
+                logoutLabel: "Logout",
                 harian: "Rekap Dina Iki", harianDesc: "Kelola catetan dinanmu",
                 inc: "Pemasukan", exp: "Pengeluaran", bal: "Sisa Saldo",
                 addTitle: "Tambah Transaksi", editTitle: "Edit Transaksi", labelDate: "Tanggal Transaksi",
@@ -588,7 +578,7 @@
                 subtitle: "Keuangan Pintar & Praktis",
                 menuLabel: "Ménu Navigasi",
                 savedAccLabel: "Akun Kasimpen dina Parangkat",
-                switchAccTitle: "Ganti Akun", logoutTitle: "Kaluar",
+                logoutLabel: "Logout",
                 harian: "Rekap Harian", harianDesc: "Polahkeun catetan poéan anjeun",
                 inc: "Pasukan", exp: "Pangeluaran", bal: "Sésa Saldo",
                 addTitle: "Tambah Transaksi", editTitle: "Édit Transaksi", labelDate: "Tanggal Transaksi",
@@ -618,7 +608,7 @@
                 subtitle: "Kewangan Pintar & Praktikal",
                 menuLabel: "Menu Navigasi",
                 savedAccLabel: "Akaun Tersimpan pada Peranti",
-                switchAccTitle: "Tukar Akaun", logoutTitle: "Keluar",
+                logoutLabel: "Logout",
                 harian: "Rekod Harian", harianDesc: "Uruskan nota harian anda",
                 inc: "Pendapatan", exp: "Perbelanjaan", bal: "Baki Saldo",
                 addTitle: "Tambah Transaksi", editTitle: "Sunting Transaksi", labelDate: "Tarikh Transaksi",
@@ -648,7 +638,7 @@
                 subtitle: "Finanzas Inteligentes y Prácticas",
                 menuLabel: "Menú de Navegación",
                 savedAccLabel: "Cuentas Guardadas en el Dispositivo",
-                switchAccTitle: "Cambiar Cuenta", logoutTitle: "Cerrar Sesión",
+                logoutLabel: "Logout",
                 harian: "Resumen Diario", harianDesc: "Gestiona tus notas diarias",
                 inc: "Ingresos", exp: "Gastos", bal: "Saldo Restante",
                 addTitle: "Añadir Transacción", editTitle: "Editar Transacción", labelDate: "Fecha de Transacción",
@@ -678,7 +668,7 @@
                 subtitle: "智能与实用财务",
                 menuLabel: "导航菜单",
                 savedAccLabel: "本机已保存账号",
-                switchAccTitle: "切换账号", logoutTitle: "退出",
+                logoutLabel: "Logout",
                 harian: "每日摘要", harianDesc: "管理您的日常记账",
                 inc: "收入", exp: "支出", bal: "剩余余额",
                 addTitle: "添加交易", editTitle: "编辑交易", labelDate: "交易日期",
@@ -708,7 +698,7 @@
                 subtitle: "مالية ذكية وواضحة",
                 menuLabel: "قائمة التنقل",
                 savedAccLabel: "الحسابات المحفوظة على الجهاز",
-                switchAccTitle: "تبديل الحساب", logoutTitle: "خروج",
+                logoutLabel: "Logout",
                 harian: "الملخص اليومي", harianDesc: "إدارة ملاحظاتك اليومية",
                 inc: "الدخل", exp: "المصروفات", bal: "الرصيد المتبقي",
                 addTitle: "إضافة معاملة", editTitle: "تعديل المعاملة", labelDate: "تاريخ المعاملة",
@@ -960,15 +950,11 @@
             const accountBox = document.getElementById('accountActionBox');
             const guestBannerText = document.getElementById('guestSaveBannerText');
             const sidebarSaveBtn = document.getElementById('sidebarSaveGmailBtn');
-            const headerGmailBtn = document.getElementById('headerGmailSaveBtn');
-            const headerSwitchBtn = document.getElementById('headerSwitchGmailBtn');
             const activeUserEmail = document.getElementById('activeUserEmail');
 
             if (accountBox) accountBox.classList.toggle('hidden', !hasSession);
             if (guestBannerText) guestBannerText.classList.toggle('hidden', !isGuestSession);
             if (sidebarSaveBtn) sidebarSaveBtn.classList.toggle('hidden', !isGuestSession);
-            if (headerGmailBtn) headerGmailBtn.classList.toggle('hidden', !isGuestSession);
-            if (headerSwitchBtn) headerSwitchBtn.classList.toggle('hidden', !hasSession);
             if (activeUserEmail) activeUserEmail.textContent = labelText || '';
             setSyncBadge(isGuestSession ? "Mode Tamu (Lokal)" : "Cloud Synced");
         }
@@ -1174,19 +1160,13 @@
             renderSavedAccounts();
         }
 
-        function switchAccount() {
+        function logoutUser() {
+            closeSidebar();
             resetSessionStateForAuth();
             auth.signOut().catch(() => {
                 renderSavedAccounts();
                 document.getElementById('authScreen').classList.remove('hidden');
                 document.getElementById('menuToggleBtn').classList.add('hidden');
-            });
-        }
-
-        function logoutUser() {
-            resetSessionStateForAuth();
-            auth.signOut().then(() => {
-                window.location.reload();
             });
         }
 
@@ -1298,8 +1278,8 @@
             const t = dict[lang] || dict['id'];
             document.getElementById('txt-subtitle').textContent = t.subtitle;
             document.getElementById('txt-menu-label').textContent = t.menuLabel;
-            document.getElementById('switchAccBtn').title = t.switchAccTitle;
-            document.getElementById('logoutBtn').title = t.logoutTitle;
+            const logoutEl = document.getElementById('txt-logout-label');
+            if (logoutEl) logoutEl.textContent = t.logoutLabel || "Logout";
             renderSavedAccounts();
             document.getElementById('txt-harian-title').textContent = t.harian;
             document.getElementById('txt-harian-desc').textContent = t.harianDesc;
