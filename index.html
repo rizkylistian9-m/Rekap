@@ -50,6 +50,12 @@
 
             <div id="authError" class="bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400 text-xs p-2.5 rounded-xl hidden"></div>
 
+            <!-- Daftar Akun Tersimpan di Perangkat -->
+            <div id="savedAccountsBox" class="space-y-1.5 hidden">
+                <p id="savedAccountsLabel" class="text-[10px] font-semibold text-gray-400 uppercase tracking-wide">Akun Tersimpan di Perangkat</p>
+                <div id="savedAccountsList" class="space-y-1.5 max-h-36 overflow-y-auto pr-0.5"></div>
+            </div>
+
             <form onsubmit="handleAuth(event)" class="space-y-3">
                 <div>
                     <label class="block text-[10px] text-gray-400 mb-1">Email</label>
@@ -107,10 +113,13 @@
                 <option value="GBP">GBP</option>
                 <option value="SAR">SAR</option>
             </select>
-            <button onclick="toggleDarkMode()" class="bg-gray-100 dark:bg-gray-700 p-1 rounded-lg text-xs w-7 h-7 flex items-center justify-center flex-shrink-0">
+            <button onclick="toggleDarkMode()" class="bg-gray-100 dark:bg-gray-700 p-1 rounded-lg text-xs w-7 h-7 flex items-center justify-center flex-shrink-0" title="Mode Gelap/Terang">
                 <i id="modeIconClass" class="fa-solid fa-sun text-xs"></i>
             </button>
-            <button onclick="logoutUser()" class="bg-red-50 dark:bg-red-900/30 text-red-500 p-1 rounded-lg text-xs w-7 h-7 flex items-center justify-center flex-shrink-0" title="Keluar">
+            <button id="switchAccBtn" onclick="switchAccount()" class="bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 p-1 rounded-lg text-xs w-7 h-7 flex items-center justify-center flex-shrink-0" title="Ganti Akun">
+                <i class="fa-solid fa-user-pen text-xs"></i>
+            </button>
+            <button id="logoutBtn" onclick="logoutUser()" class="bg-red-50 dark:bg-red-900/30 text-red-500 p-1 rounded-lg text-xs w-7 h-7 flex items-center justify-center flex-shrink-0" title="Keluar">
                 <i class="fa-solid fa-right-from-bracket text-xs"></i>
             </button>
         </div>
@@ -357,6 +366,7 @@
         firebase.initializeApp(firebaseConfig);
         const auth = firebase.auth();
 
+        const SAVED_ACCOUNTS_KEY = 'kikap_saved_accounts';
         let transactions = [];
         let savingsGoals = [];
         let currency = 'IDR';
@@ -372,6 +382,8 @@
         const dict = {
             id: {
                 subtitle: "Keuangan Pintar & Praktis",
+                savedAccLabel: "Akun Tersimpan di Perangkat",
+                switchAccTitle: "Ganti Akun", logoutTitle: "Keluar",
                 harian: "Rekap Harian", harianDesc: "Kelola catatan harianmu",
                 inc: "Pemasukan", exp: "Pengeluaran", bal: "Sisa Saldo",
                 addTitle: "Tambah Transaksi", editTitle: "Edit Transaksi", labelDate: "Tanggal Transaksi",
@@ -394,6 +406,8 @@
             },
             en: {
                 subtitle: "Smart & Practical Finance",
+                savedAccLabel: "Saved Accounts on Device",
+                switchAccTitle: "Switch Account", logoutTitle: "Log Out",
                 harian: "Daily Summary", harianDesc: "Manage your daily notes",
                 inc: "Income", exp: "Expense", bal: "Remaining Balance",
                 addTitle: "Add Transaction", editTitle: "Edit Transaction", labelDate: "Transaction Date",
@@ -416,6 +430,8 @@
             },
             jv: {
                 subtitle: "Keuangan Pintar & Praktis",
+                savedAccLabel: "Akun Kesimpen ing Piranti",
+                switchAccTitle: "Ganti Akun", logoutTitle: "Metu",
                 harian: "Rekap Dina Iki", harianDesc: "Kelola catetan dinanmu",
                 inc: "Pemasukan", exp: "Pengeluaran", bal: "Sisa Saldo",
                 addTitle: "Tambah Transaksi", editTitle: "Edit Transaksi", labelDate: "Tanggal Transaksi",
@@ -438,6 +454,8 @@
             },
             su: {
                 subtitle: "Keuangan Pintar & Praktis",
+                savedAccLabel: "Akun Kasimpen dina Parangkat",
+                switchAccTitle: "Ganti Akun", logoutTitle: "Kaluar",
                 harian: "Rekap Harian", harianDesc: "Polahkeun catetan poéan anjeun",
                 inc: "Pasukan", exp: "Pangeluaran", bal: "Sésa Saldo",
                 addTitle: "Tambah Transaksi", editTitle: "Édit Transaksi", labelDate: "Tanggal Transaksi",
@@ -460,6 +478,8 @@
             },
             ms: {
                 subtitle: "Kewangan Pintar & Praktikal",
+                savedAccLabel: "Akaun Tersimpan pada Peranti",
+                switchAccTitle: "Tukar Akaun", logoutTitle: "Keluar",
                 harian: "Rekod Harian", harianDesc: "Uruskan nota harian anda",
                 inc: "Pendapatan", exp: "Perbelanjaan", bal: "Baki Saldo",
                 addTitle: "Tambah Transaksi", editTitle: "Sunting Transaksi", labelDate: "Tarikh Transaksi",
@@ -482,6 +502,8 @@
             },
             es: {
                 subtitle: "Finanzas Inteligentes y Prácticas",
+                savedAccLabel: "Cuentas Guardadas en el Dispositivo",
+                switchAccTitle: "Cambiar Cuenta", logoutTitle: "Cerrar Sesión",
                 harian: "Resumen Diario", harianDesc: "Gestiona tus notas diarias",
                 inc: "Ingresos", exp: "Gastos", bal: "Saldo Restante",
                 addTitle: "Añadir Transacción", editTitle: "Editar Transacción", labelDate: "Fecha de Transacción",
@@ -504,6 +526,8 @@
             },
             zh: {
                 subtitle: "智能与实用财务",
+                savedAccLabel: "本机已保存账号",
+                switchAccTitle: "切换账号", logoutTitle: "退出",
                 harian: "每日摘要", harianDesc: "管理您的日常记账",
                 inc: "收入", exp: "支出", bal: "剩余余额",
                 addTitle: "添加交易", editTitle: "编辑交易", labelDate: "交易日期",
@@ -526,6 +550,8 @@
             },
             ar: {
                 subtitle: "مالية ذكية وواضحة",
+                savedAccLabel: "الحسابات المحفوظة على الجهاز",
+                switchAccTitle: "تبديل الحساب", logoutTitle: "خروج",
                 harian: "الملخص اليومي", harianDesc: "إدارة ملاحظاتك اليومية",
                 inc: "الدخل", exp: "المصروفات", bal: "الرصيد المتبقي",
                 addTitle: "إضافة معاملة", editTitle: "تعديل المعاملة", labelDate: "تاريخ المعاملة",
@@ -548,14 +574,85 @@
             }
         };
 
+        function getSavedAccounts() {
+            try {
+                const raw = JSON.parse(localStorage.getItem(SAVED_ACCOUNTS_KEY));
+                return Array.isArray(raw) ? raw : [];
+            } catch {
+                return [];
+            }
+        }
+
+        function saveAccountToDevice(email) {
+            if (!email) return;
+            const normalized = email.trim().toLowerCase();
+            if (!normalized) return;
+
+            const current = getSavedAccounts().filter(item => item.toLowerCase() !== normalized);
+            current.unshift(email.trim());
+            localStorage.setItem(SAVED_ACCOUNTS_KEY, JSON.stringify(current.slice(0, 6)));
+            renderSavedAccounts();
+        }
+
+        function removeSavedAccount(email) {
+            const normalized = email.trim().toLowerCase();
+            const filtered = getSavedAccounts().filter(item => item.toLowerCase() !== normalized);
+            localStorage.setItem(SAVED_ACCOUNTS_KEY, JSON.stringify(filtered));
+            renderSavedAccounts();
+        }
+
+        function selectSavedAccount(email) {
+            isSignUpMode = false;
+            document.getElementById('authSubmitBtn').textContent = "Masuk";
+            document.getElementById('authSwitchBtn').textContent = "Belum punya akun? Daftar di sini";
+            document.getElementById('authSubtitle').textContent = "Masuk untuk mengelola keuanganmu";
+            document.getElementById('authEmail').value = email;
+            const passInput = document.getElementById('authPassword');
+            passInput.value = '';
+            passInput.focus();
+        }
+
+        function renderSavedAccounts() {
+            const box = document.getElementById('savedAccountsBox');
+            const list = document.getElementById('savedAccountsList');
+            const label = document.getElementById('savedAccountsLabel');
+            const t = dict[lang] || dict['id'];
+            if (label) label.textContent = t.savedAccLabel || "Akun Tersimpan di Perangkat";
+
+            const accounts = getSavedAccounts();
+            if (!accounts.length) {
+                box.classList.add('hidden');
+                list.innerHTML = '';
+                return;
+            }
+
+            box.classList.remove('hidden');
+            list.innerHTML = accounts.map(acc => {
+                const safeAttr = acc.replace(/'/g, "&#39;").replace(/"/g, "&quot;");
+                return `
+                    <div class="flex items-center justify-between gap-2 bg-gray-50 dark:bg-gray-700/70 border dark:border-gray-600 rounded-xl px-2.5 py-1.5">
+                        <button type="button" onclick="selectSavedAccount('${safeAttr}')" class="flex-1 text-left text-xs font-medium text-gray-800 dark:text-gray-100 hover:text-blue-600 dark:hover:text-blue-400 truncate flex items-center gap-2">
+                            <i class="fa-solid fa-circle-user text-blue-600 dark:text-blue-400 text-sm flex-shrink-0"></i>
+                            <span class="truncate">${acc}</span>
+                        </button>
+                        <button type="button" onclick="removeSavedAccount('${safeAttr}')" class="text-gray-400 hover:text-red-500 p-1 text-[10px] flex-shrink-0" title="Hapus dari daftar">
+                            <i class="fa-solid fa-xmark"></i>
+                        </button>
+                    </div>
+                `;
+            }).join('');
+        }
+
         auth.onAuthStateChanged(user => {
             const authScreen = document.getElementById('authScreen');
             const bottomNav = document.getElementById('bottomNav');
             if (user) {
+                if (user.email) saveAccountToDevice(user.email);
                 authScreen.classList.add('hidden');
                 bottomNav.classList.remove('hidden');
                 loadUserData(user.uid);
             } else {
+                renderSavedAccounts();
                 authScreen.classList.remove('hidden');
                 bottomNav.classList.add('hidden');
             }
@@ -579,17 +676,22 @@
 
         function handleAuth(e) {
             e.preventDefault();
-            const email = document.getElementById('authEmail').value;
+            const email = document.getElementById('authEmail').value.trim();
             const pass = document.getElementById('authPassword').value;
             const errBox = document.getElementById('authError');
             errBox.classList.add('hidden');
 
             const promise = isSignUpMode ? auth.createUserWithEmailAndPassword(email, pass) : auth.signInWithEmailAndPassword(email, pass);
 
-            promise.catch(error => {
-                errBox.textContent = error.message;
-                errBox.classList.remove('hidden');
-            });
+            promise
+                .then(() => {
+                    saveAccountToDevice(email);
+                })
+                .catch(error => {
+                    errBox.className = "bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400 text-xs p-2.5 rounded-xl";
+                    errBox.textContent = error.message;
+                    errBox.classList.remove('hidden');
+                });
         }
 
         function handleForgotPassword() {
@@ -598,6 +700,7 @@
             errBox.classList.add('hidden');
 
             if (!email) {
+                errBox.className = "bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400 text-xs p-2.5 rounded-xl";
                 errBox.textContent = "Masukkan email kamu terlebih dahulu di kolom Email di atas.";
                 errBox.classList.remove('hidden');
                 return;
@@ -616,7 +719,32 @@
                 });
         }
 
+        function resetSessionStateForAuth() {
+            transactions = [];
+            savingsGoals = [];
+            editingId = null;
+            isSignUpMode = false;
+
+            document.getElementById('authEmail').value = '';
+            document.getElementById('authPassword').value = '';
+            document.getElementById('authError').classList.add('hidden');
+            document.getElementById('authSubmitBtn').textContent = "Masuk";
+            document.getElementById('authSwitchBtn').textContent = "Belum punya akun? Daftar di sini";
+            document.getElementById('authSubtitle').textContent = "Masuk untuk mengelola keuanganmu";
+            renderSavedAccounts();
+        }
+
+        function switchAccount() {
+            resetSessionStateForAuth();
+            auth.signOut().catch(() => {
+                renderSavedAccounts();
+                document.getElementById('authScreen').classList.remove('hidden');
+                document.getElementById('bottomNav').classList.add('hidden');
+            });
+        }
+
         function logoutUser() {
+            resetSessionStateForAuth();
             auth.signOut().then(() => {
                 window.location.reload();
             });
@@ -677,6 +805,9 @@
         function applyLanguage() {
             const t = dict[lang] || dict['id'];
             document.getElementById('txt-subtitle').textContent = t.subtitle;
+            document.getElementById('switchAccBtn').title = t.switchAccTitle;
+            document.getElementById('logoutBtn').title = t.logoutTitle;
+            renderSavedAccounts();
             document.getElementById('txt-harian-title').textContent = t.harian;
             document.getElementById('txt-harian-desc').textContent = t.harianDesc;
             document.getElementById('txt-inc-label').textContent = t.inc;
