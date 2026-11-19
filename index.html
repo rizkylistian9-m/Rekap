@@ -113,6 +113,13 @@
                     <i class="fa-solid fa-calendar w-4 text-center text-sm"></i>
                     <span id="txt-nav-tahunan">Tahunan</span>
                 </button>
+                <button type="button" onclick="selectSidebarTab('piutang')" class="nav-btn w-full flex items-center justify-between px-3 py-2.5 rounded-xl text-xs font-medium text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700/70 transition-colors text-left" data-tab="piutang">
+                    <span class="flex items-center gap-3">
+                        <i class="fa-solid fa-hand-holding-dollar w-4 text-center text-sm"></i>
+                        <span id="txt-nav-piutang">Piutang</span>
+                    </span>
+                    <span id="receivableBadge" class="bg-amber-500 text-white text-[9px] px-1.5 py-0.5 rounded-full font-bold">0</span>
+                </button>
                 <button type="button" onclick="selectSidebarTab('target')" class="nav-btn w-full flex items-center justify-between px-3 py-2.5 rounded-xl text-xs font-medium text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700/70 transition-colors text-left" data-tab="target">
                     <span class="flex items-center gap-3">
                         <i class="fa-solid fa-bullseye w-4 text-center text-sm"></i>
@@ -336,7 +343,43 @@
             </div>
         </div>
 
-        <!-- 4. Tab: Target Nabung -->
+        <!-- 4. Tab: Piutang (Terpisah dari Kas/Transaksi Utama) -->
+        <div id="content-piutang" class="tab-content space-y-3 hidden w-full">
+            <div class="bg-white dark:bg-gray-800 p-3 rounded-2xl shadow-sm border dark:border-gray-700">
+                <h2 id="txt-piutang-title" class="text-base font-bold">Catatan Piutang</h2>
+                <p id="txt-piutang-desc" class="text-[11px] text-gray-400">Total piutang terpisah dari kas utama; pemasukan bayar piutang otomatis mengurangi sisa piutang</p>
+            </div>
+
+            <div class="grid grid-cols-2 gap-2 w-full">
+                <div class="bg-white dark:bg-gray-800 p-3 rounded-2xl shadow-sm border dark:border-gray-700">
+                    <p id="txt-piutang-active-label" class="text-[9px] text-gray-400 font-bold uppercase">Total Piutang Aktif</p>
+                    <h3 id="totalActiveReceivable" class="text-xs font-bold text-amber-500 mt-0.5 truncate">0</h3>
+                </div>
+                <div class="bg-white dark:bg-gray-800 p-3 rounded-2xl shadow-sm border dark:border-gray-700">
+                    <p id="txt-piutang-paid-label" class="text-[9px] text-gray-400 font-bold uppercase">Total Diterima (Bayar Piutang)</p>
+                    <h3 id="totalPaidReceivable" class="text-xs font-bold text-emerald-600 mt-0.5 truncate">0</h3>
+                </div>
+            </div>
+
+            <div class="bg-white dark:bg-gray-800 p-3.5 rounded-2xl shadow-sm border dark:border-gray-700 space-y-2.5 w-full">
+                <h3 id="txt-add-piutang-title" class="font-bold text-xs flex items-center gap-1.5"><i class="fa-solid fa-plus-circle text-amber-500"></i> Tambah Piutang Baru</h3>
+                <form id="receivableForm" onsubmit="addReceivable(event)" class="space-y-2.5 w-full">
+                    <div>
+                        <label id="txt-piutang-date-label" class="block text-[10px] text-gray-400 mb-1">Tanggal Piutang</label>
+                        <input type="date" id="recDate" required class="w-full bg-gray-50 dark:bg-gray-700 border dark:border-gray-600 rounded-xl px-2.5 py-1.5 text-xs focus:ring-2 focus:ring-amber-500 focus:outline-none">
+                    </div>
+                    <input type="text" id="recPerson" placeholder="Nama / Keterangan Piutang (Cth: Budi)" required class="w-full bg-gray-50 dark:bg-gray-700 border dark:border-gray-600 rounded-xl px-2.5 py-1.5 text-xs focus:ring-2 focus:ring-amber-500 focus:outline-none">
+                    <input type="number" id="recAmount" placeholder="Nominal Piutang" required min="1" class="w-full bg-gray-50 dark:bg-gray-700 border dark:border-gray-600 rounded-xl px-2.5 py-1.5 text-xs focus:ring-2 focus:ring-amber-500 focus:outline-none">
+                    <button type="submit" id="txt-create-piutang-btn" class="w-full bg-amber-500 hover:bg-amber-600 text-white font-medium rounded-xl py-2 text-xs transition-colors shadow-md flex items-center justify-center gap-1.5">
+                        <i class="fa-solid fa-hand-holding-dollar"></i> Simpan Piutang
+                    </button>
+                </form>
+            </div>
+
+            <div class="space-y-2.5 w-full" id="receivablesContainer"></div>
+        </div>
+
+        <!-- 5. Tab: Target Nabung -->
         <div id="content-target" class="tab-content space-y-3 hidden w-full">
             <div class="bg-white dark:bg-gray-800 p-3 rounded-2xl shadow-sm border dark:border-gray-700">
                 <h2 id="txt-target-title" class="text-base font-bold">Target Nabung</h2>
@@ -357,7 +400,7 @@
             <div class="space-y-3 w-full" id="savingsGoalsContainer"></div>
         </div>
 
-        <!-- 5. Tab: Grafik Analitik -->
+        <!-- 6. Tab: Grafik Analitik -->
         <div id="content-grafik" class="tab-content space-y-3 hidden w-full">
             <div class="bg-white dark:bg-gray-800 p-3 rounded-2xl shadow-sm border dark:border-gray-700">
                 <h2 id="txt-grafik-title" class="text-base font-bold">Grafik Analitik</h2>
@@ -398,6 +441,7 @@
 
         const SAVED_ACCOUNTS_KEY = 'kikap_saved_accounts';
         let transactions = [];
+        let receivables = [];
         let savingsGoals = [];
         let currency = 'IDR';
         let lang = 'id';
@@ -409,6 +453,17 @@
         let chartIncExpInstance = null;
         let chartExpCatInstance = null;
         let chartIncCatInstance = null;
+
+        const BAYAR_PIUTANG_LABELS = new Set([
+            "Bayar Piutang",
+            "Receivable Payment",
+            "Bayar Piutang",
+            "Bayar Piutang",
+            "Bayaran Piutang",
+            "Pago de Cobro",
+            "收回欠款",
+            "سداد مستحق"
+        ]);
 
         const dict = {
             id: {
@@ -426,14 +481,19 @@
                 mIncCat: "Kategori Pemasukan", mExpCat: "Kategori Pengeluaran", emptyInc: "Belum ada pemasukan.", emptyExp: "Belum ada pengeluaran.",
                 tahunan: "Rekap Tahunan", tahunanDesc: "Analisis keuangan tahunan", yDetail: "Rincian Per Bulan",
                 thMonth: "Bulan", thIn: "Masuk", thOut: "Keluar", thNet: "Saldo",
+                piutang: "Catatan Piutang", piutangDesc: "Total piutang terpisah dari kas utama; pemasukan bayar piutang otomatis mengurangi sisa piutang",
+                piutangActive: "Total Piutang Aktif", piutangPaid: "Total Diterima (Bayar Piutang)",
+                addPiutang: "Tambah Piutang Baru", piutangDate: "Tanggal Piutang",
+                piutangPersonPh: "Nama / Keterangan Piutang (Cth: Budi)", piutangAmtPh: "Nominal Piutang",
+                createPiutangBtn: "Simpan Piutang", emptyPiutang: "Belum ada catatan piutang.",
                 target: "Target Nabung", targetDesc: "Kelola impian tabunganmu", addTarget: "Tambah Target Baru",
                 goalNamePh: "Nama Impian (Cth: Beli Laptop)", goalAmtPh: "Nominal Target", createGoalBtn: "Buat Target",
                 emptyGoal: "Belum ada target nabung.", tercapai: "Tercapai",
                 grafik: "Grafik Analitik", grafikDesc: "Visualisasi data keuanganmu",
                 c1: "Pemasukan vs Pengeluaran", c2: "Volume Pengeluaran per Kategori", c3: "Volume Pemasukan per Kategori",
-                navHarian: "Harian", navBulanan: "Bulanan", navTahunan: "Tahunan", navTarget: "Target", navGrafik: "Grafik",
-                optIn: ["Dana Awal", "Gaji", "Bonus", "Penjualan", "Investasi", "Hadiah / THR", "Hutang / Piutang", "Lainnya"],
-                optOut: ["Makanan & Minuman", "Transportasi", "Belanja", "Tagihan", "Hiburan", "Kesehatan", "Pendidikan", "Hutang / Piutang", "Lainnya"],
+                navHarian: "Harian", navBulanan: "Bulanan", navTahunan: "Tahunan", navPiutang: "Piutang", navTarget: "Target", navGrafik: "Grafik",
+                optIn: ["Dana Awal", "Gaji", "Bonus", "Penjualan", "Investasi", "Hadiah / THR", "Bayar Piutang", "Lainnya"],
+                optOut: ["Makanan & Minuman", "Transportasi", "Belanja", "Tagihan", "Hiburan", "Kesehatan", "Pendidikan", "Lainnya"],
                 confReset: "Reset seluruh data transaksi?"
             },
             en: {
@@ -451,14 +511,19 @@
                 mIncCat: "Income Categories", mExpCat: "Expense Categories", emptyInc: "No income yet.", emptyExp: "No expense yet.",
                 tahunan: "Yearly Summary", tahunanDesc: "Yearly financial analysis", yDetail: "Monthly Breakdown",
                 thMonth: "Month", thIn: "In", thOut: "Out", thNet: "Balance",
+                piutang: "Receivables Ledger", piutangDesc: "Receivables total is separate from main cash; receivable payment income reduces remaining receivables",
+                piutangActive: "Active Receivables Total", piutangPaid: "Received (Receivable Payment)",
+                addPiutang: "Add New Receivable", piutangDate: "Receivable Date",
+                piutangPersonPh: "Name / Note (e.g., Budi)", piutangAmtPh: "Receivable Amount",
+                createPiutangBtn: "Save Receivable", emptyPiutang: "No receivables yet.",
                 target: "Savings Goals", targetDesc: "Manage your savings dreams", addTarget: "Add New Goal",
                 goalNamePh: "Goal Name (e.g., Buy Laptop)", goalAmtPh: "Target Amount", createGoalBtn: "Create Goal",
                 emptyGoal: "No savings goals yet.", tercapai: "Achieved",
                 grafik: "Analytics Charts", grafikDesc: "Visualize your financial data",
                 c1: "Income vs Expense", c2: "Expense Volume by Category", c3: "Income Volume by Category",
-                navHarian: "Daily", navBulanan: "Monthly", navTahunan: "Yearly", navTarget: "Goals", navGrafik: "Charts",
-                optIn: ["Opening Balance", "Salary", "Bonus", "Sales", "Investment", "Gift / THR", "Debt / Receivable", "Other"],
-                optOut: ["Food & Drink", "Transport", "Shopping", "Bills", "Entertainment", "Health", "Education", "Debt / Receivable", "Other"],
+                navHarian: "Daily", navBulanan: "Monthly", navTahunan: "Yearly", navPiutang: "Receivables", navTarget: "Goals", navGrafik: "Charts",
+                optIn: ["Opening Balance", "Salary", "Bonus", "Sales", "Investment", "Gift / THR", "Receivable Payment", "Other"],
+                optOut: ["Food & Drink", "Transport", "Shopping", "Bills", "Entertainment", "Health", "Education", "Other"],
                 confReset: "Reset all transaction data?"
             },
             jv: {
@@ -476,14 +541,19 @@
                 mIncCat: "Kategori Pemasukan", mExpCat: "Kategori Pengeluaran", emptyInc: "Durung ana pemasukan.", emptyExp: "Durung ana pengeluaran.",
                 tahunan: "Rekap Taun", tahunanDesc: "Analisis keuangan taunan", yDetail: "Rincian Saben Sasi",
                 thMonth: "Sasi", thIn: "Mlebu", thOut: "Metu", thNet: "Saldo",
+                piutang: "Catetan Piutang", piutangDesc: "Total piutang dipisah saka kas utama; pemasukan bayar piutang otomatis ngurangi sisa piutang",
+                piutangActive: "Total Piutang Aktif", piutangPaid: "Katampa (Bayar Piutang)",
+                addPiutang: "Tambah Piutang Anyar", piutangDate: "Tanggal Piutang",
+                piutangPersonPh: "Jeneng / Catetan Piutang (Cth: Budi)", piutangAmtPh: "Nominal Piutang",
+                createPiutangBtn: "Simpen Piutang", emptyPiutang: "Durung ana catetan piutang.",
                 target: "Target Nabung", targetDesc: "Kelola impen tabunganmu", addTarget: "Tambah Target Anyar",
                 goalNamePh: "Jeneng Impen (Cth: Tumbas Laptop)", goalAmtPh: "Nominal Target", createGoalBtn: "Nggawe Target",
                 emptyGoal: "Durung ana target nabung.", tercapai: "Kagapai",
                 grafik: "Grafik Analitik", grafikDesc: "Visualisasi data keuanganmu",
                 c1: "Pemasukan vs Pengeluaran", c2: "Volume Pengeluaran per Kategori", c3: "Volume Pemasukan per Kategori",
-                navHarian: "Dina Iki", navBulanan: "Sasi", navTahunan: "Taun", navTarget: "Target", navGrafik: "Grafik",
-                optIn: ["Dana Awal", "Gaji", "Bonus", "Hasil Dol", "Investasi", "Hadiah / THR", "Utang / Piutang", "Liyane"],
-                optOut: ["Panganan & Ngombe", "Transportasi", "Blanja", "Tagihan", "Hiburan", "Kesehatan", "Pendidikan", "Utang / Piutang", "Liyane"],
+                navHarian: "Dina Iki", navBulanan: "Sasi", navTahunan: "Taun", navPiutang: "Piutang", navTarget: "Target", navGrafik: "Grafik",
+                optIn: ["Dana Awal", "Gaji", "Bonus", "Hasil Dol", "Investasi", "Hadiah / THR", "Bayar Piutang", "Liyane"],
+                optOut: ["Panganan & Ngombe", "Transportasi", "Blanja", "Tagihan", "Hiburan", "Kesehatan", "Pendidikan", "Liyane"],
                 confReset: "Reset kabeh data transaksi?"
             },
             su: {
@@ -501,14 +571,19 @@
                 mIncCat: "Kategori Pasukan", mExpCat: "Kategori Pangeluaran", emptyInc: "Tacan aya pasukan.", emptyExp: "Tacan aya pangeluaran.",
                 tahunan: "Rekap Taunan", tahunanDesc: "Analisis keuangan taunan", yDetail: "Rincian Per Bulan",
                 thMonth: "Bulan", thIn: "Asup", thOut: "Kaluar", thNet: "Saldo",
+                piutang: "Catetan Piutang", piutangDesc: "Total piutang dipisahkeun tina kas utama; pemasukan bayar piutang otomatis ngurangan sésa piutang",
+                piutangActive: "Total Piutang Aktif", piutangPaid: "Katampi (Bayar Piutang)",
+                addPiutang: "Tambah Piutang Anyar", piutangDate: "Tanggal Piutang",
+                piutangPersonPh: "Ngaran / Catetan Piutang (Conto: Budi)", piutangAmtPh: "Nominal Piutang",
+                createPiutangBtn: "Simpen Piutang", emptyPiutang: "Tacan aya catetan piutang.",
                 target: "Target Nabung", targetDesc: "Polahkeun impian tabungan anjeun", addTarget: "Tambah Target Anyar",
                 goalNamePh: "Ngaran Impian (Conto: Meli Laptop)", goalAmtPh: "Nominal Target", createGoalBtn: "Jieun Target",
                 emptyGoal: "Tacan aya target nabung.", tercapai: "Katampa",
                 grafik: "Grafik Analitik", grafikDesc: "Visualisasi data keuangan anjeun",
                 c1: "Pasukan vs Pangeluaran", c2: "Volume Pangeluaran per Kategori", c3: "Volume Pasukan per Kategori",
-                navHarian: "Poéan", navBulanan: "Bulanan", navTahunan: "Taunan", navTarget: "Target", navGrafik: "Grafik",
-                optIn: ["Dana Awal", "Gaji", "Bonus", "Jualan", "Investasi", "Hadiah / THR", "Hutang / Piutang", "Lianna"],
-                optOut: ["Dahar & Inum", "Transportasi", "Balanja", "Tagihan", "Hiburan", "Kasehatan", "Pendidikan", "Hutang / Piutang", "Lianna"],
+                navHarian: "Poéan", navBulanan: "Bulanan", navTahunan: "Taunan", navPiutang: "Piutang", navTarget: "Target", navGrafik: "Grafik",
+                optIn: ["Dana Awal", "Gaji", "Bonus", "Jualan", "Investasi", "Hadiah / THR", "Bayar Piutang", "Lianna"],
+                optOut: ["Dahar & Inum", "Transportasi", "Balanja", "Tagihan", "Hiburan", "Kasehatan", "Pendidikan", "Lianna"],
                 confReset: "Reset sadaya data transaksi?"
             },
             ms: {
@@ -526,14 +601,19 @@
                 mIncCat: "Kategori Pendapatan", mExpCat: "Kategori Perbelanjaan", emptyInc: "Tiada pendapatan lagi.", emptyExp: "Tiada perbelanjaan lagi.",
                 tahunan: "Rekod Tahunan", tahunanDesc: "Analisis kewangan tahunan", yDetail: "Pecahan Bulanan",
                 thMonth: "Bulan", thIn: "Masuk", thOut: "Keluar", thNet: "Baki",
+                piutang: "Catatan Piutang", piutangDesc: "Jumlah piutang diasingkan daripada tunai utama; bayaran piutang mengurangkan baki piutang",
+                piutangActive: "Jumlah Piutang Aktif", piutangPaid: "Diterima (Bayaran Piutang)",
+                addPiutang: "Tambah Piutang Baru", piutangDate: "Tarikh Piutang",
+                piutangPersonPh: "Nama / Catatan (Cth: Budi)", piutangAmtPh: "Jumlah Piutang",
+                createPiutangBtn: "Simpan Piutang", emptyPiutang: "Tiada catatan piutang lagi.",
                 target: "Matlamat Simpanan", targetDesc: "Uruskan impian simpanan anda", addTarget: "Tambah Matlamat Baru",
                 goalNamePh: "Nama Matlamat (Cth: Beli Laptop)", goalAmtPh: "Jumlah Sasaran", createGoalBtn: "Bina Matlamat",
                 emptyGoal: "Tiada matlamat simpanan lagi.", tercapai: "Tercapai",
                 grafik: "Carta Analisis", grafikDesc: "Visualisasikan data kewangan anda",
                 c1: "Pendapatan vs Perbelanjaan", c2: "Jumlah Perbelanjaan mengikut Kategori", c3: "Jumlah Pendapatan mengikut Kategori",
-                navHarian: "Harian", navBulanan: "Bulanan", navTahunan: "Tahunan", navTarget: "Matlamat", navGrafik: "Carta",
-                optIn: ["Dana Awal", "Gaji", "Bonus", "Jualan", "Pelaburan", "Hadiah / THR", "Hutang / Piutang", "Lain-lain"],
-                optOut: ["Makanan & Minuman", "Pengangkutan", "Belanja", "Bil", "Hiburan", "Kesihatan", "Pendidikan", "Hutang / Piutang", "Lain-lain"],
+                navHarian: "Harian", navBulanan: "Bulanan", navTahunan: "Tahunan", navPiutang: "Piutang", navTarget: "Matlamat", navGrafik: "Carta",
+                optIn: ["Dana Awal", "Gaji", "Bonus", "Jualan", "Pelaburan", "Hadiah / THR", "Bayaran Piutang", "Lain-lain"],
+                optOut: ["Makanan & Minuman", "Pengangkutan", "Belanja", "Bil", "Hiburan", "Kesihatan", "Pendidikan", "Lain-lain"],
                 confReset: "Reset semua data transaksi?"
             },
             es: {
@@ -551,14 +631,19 @@
                 mIncCat: "Categorías de Ingresos", mExpCat: "Categorías de Gastos", emptyInc: "No hay ingresos aún.", emptyExp: "No hay gastos aún.",
                 tahunan: "Resumen Anual", tahunanDesc: "Análisis financiero anual", yDetail: "Desglose Mensual",
                 thMonth: "Mes", thIn: "Entrada", thOut: "Salida", thNet: "Saldo",
+                piutang: "Registro de Cobros", piutangDesc: "El total por cobrar es independiente del efectivo; los ingresos por cobro reducen el saldo pendiente",
+                piutangActive: "Total por Cobrar Activo", piutangPaid: "Recibido (Pago de Cobro)",
+                addPiutang: "Añadir Cobro Pendiente", piutangDate: "Fecha de Registro",
+                piutangPersonPh: "Nombre / Nota (Ej: Budi)", piutangAmtPh: "Monto por Cobrar",
+                createPiutangBtn: "Guardar Registro", emptyPiutang: "No hay registros por cobrar aún.",
                 target: "Metas de Ahorro", targetDesc: "Gestiona tus sueños de ahorro", addTarget: "Añadir Nueva Meta",
                 goalNamePh: "Nombre de la Meta (Ej: Comprar Laptop)", goalAmtPh: "Monto Objetivo", createGoalBtn: "Crear Meta",
                 emptyGoal: "No hay metas de ahorro aún.", tercapai: "Logrado",
                 grafik: "Gráficos Analíticos", grafikDesc: "Visualiza tus datos financieros",
                 c1: "Ingresos vs Gastos", c2: "Volumen de Gastos por Categoría", c3: "Volumen de Ingresos por Categoría",
-                navHarian: "Diario", navBulanan: "Mensual", navTahunan: "Anual", navTarget: "Metas", navGrafik: "Gráficos",
-                optIn: ["Saldo Inicial", "Salario", "Bonus", "Ventas", "Inversión", "Regalo / THR", "Deuda / Por Cobrar", "Otros"],
-                optOut: ["Comida y Bebida", "Transporte", "Compras", "Facturas", "Entretenimiento", "Salud", "Educación", "Deuda / Por Cobrar", "Otros"],
+                navHarian: "Diario", navBulanan: "Mensual", navTahunan: "Anual", navPiutang: "Por Cobrar", navTarget: "Metas", navGrafik: "Gráficos",
+                optIn: ["Saldo Inicial", "Salario", "Bonus", "Ventas", "Inversión", "Regalo / THR", "Pago de Cobro", "Otros"],
+                optOut: ["Comida y Bebida", "Transporte", "Compras", "Facturas", "Entretenimiento", "Salud", "Educación", "Otros"],
                 confReset: "¿Reiniciar todos los datos de transacciones?"
             },
             zh: {
@@ -576,14 +661,19 @@
                 mIncCat: "收入分类", mExpCat: "支出分类", emptyInc: "暂无收入。", emptyExp: "暂无支出。",
                 tahunan: "年度摘要", tahunanDesc: "年度财务分析", yDetail: "每月明细",
                 thMonth: "月份", thIn: "收入", thOut: "支出", thNet: "余额",
+                piutang: "应收账款明细", piutangDesc: "应收总额与日常收支分开计算；收回欠款收入会自动扣减剩余应收",
+                piutangActive: "当前应收总额", piutangPaid: "已收回（收回欠款）",
+                addPiutang: "添加应收账款", piutangDate: "记录日期",
+                piutangPersonPh: "姓名 / 备注（例：Budi）", piutangAmtPh: "应收金额",
+                createPiutangBtn: "保存应收", emptyPiutang: "暂无应收账款。",
                 target: "储蓄目标", targetDesc: "管理您的储蓄梦想", addTarget: "添加新目标",
                 goalNamePh: "目标名称（例：买电脑）", goalAmtPh: "目标金额", createGoalBtn: "创建目标",
                 emptyGoal: "暂无储蓄目标。", tercapai: "已达成",
                 grafik: "分析图表", grafikDesc: "可视化您的财务数据",
                 c1: "收入对比支出", c2: "各分类支出金额", c3: "各分类收入金额",
-                navHarian: "每日", navBulanan: "每月", navTahunan: "年度", navTarget: "目标", navGrafik: "图表",
-                optIn: ["期初资金", "薪资", "奖金", "销售", "投资", "礼金 / 节日津贴", "借贷 / 应收", "其他"],
-                optOut: ["餐饮", "交通", "购物", "账单", "娱乐", "健康", "教育", "借贷 / 应收", "其他"],
+                navHarian: "每日", navBulanan: "每月", navTahunan: "年度", navPiutang: "应收", navTarget: "目标", navGrafik: "图表",
+                optIn: ["期初资金", "薪资", "奖金", "销售", "投资", "礼金 / 节日津贴", "收回欠款", "其他"],
+                optOut: ["餐饮", "交通", "购物", "账单", "娱乐", "健康", "教育", "其他"],
                 confReset: "确定重置所有交易数据吗？"
             },
             ar: {
@@ -601,14 +691,19 @@
                 mIncCat: "فئات الدخل", mExpCat: "فئات المصروفات", emptyInc: "لا يوجد دخل بعد.", emptyExp: "لا توجد مصروفات بعد.",
                 tahunan: "الملخص السنوي", tahunanDesc: "Analisis keuangan tahunan", yDetail: "التفصيل الشهري",
                 thMonth: "الشهر", thIn: "وارد", thOut: "صادر", thNet: "الرصيد",
+                piutang: "سجل المستحقات", piutangDesc: "إجمالي المستحقات منفصل عن النقد الرئيسي؛ دخل سداد المستحق يقلل الرصيد المتبقي تلقائياً",
+                piutangActive: "إجمالي المستحقات النشطة", piutangPaid: "المحصل (سداد مستحق)",
+                addPiutang: "إضافة مستحق جديد", piutangDate: "تاريخ المستحق",
+                piutangPersonPh: "الاسم / ملاحظة (مثل: Budi)", piutangAmtPh: "قيمة المستحق",
+                createPiutangBtn: "حفظ المستحق", emptyPiutang: "لا توجد مستحقات بعد.",
                 target: "أهداف الادخار", targetDesc: "إدارة أحلامك الادخارية", addTarget: "إضافة هدف جديد",
                 goalNamePh: "اسم الهدف (مثل: شراء حاسوب)", goalAmtPh: "المبلغ المستهدف", createGoalBtn: "إنشاء الهدف",
                 emptyGoal: "لا توجد أهداف ادخار بعد.", tercapai: "متحقق",
                 grafik: "الرسوم البيانية", grafikDesc: "تصور بياناتك المالية",
                 c1: "الدخل مقابل المصروفات", c2: "حجم المصروفات حسب الفئة", c3: "حجم الدخل حسب الفئة",
-                navHarian: "اليومي", navBulanan: "الشهري", navTahunan: "السنوي", navTarget: "الأهداف", navGrafik: "الرسوم",
-                optIn: ["الرصيد الافتتاحي", "الراتب", "مكافأة", "مبيعات", "استثمار", "هدية / عيدية", "دين / مستحق", "أخرى"],
-                optOut: ["طعام وشراب", "مواصلات", "تسوق", "فواتير", "ترفيه", "صحة", "تعليم", "دين / مستحق", "أخرى"],
+                navHarian: "اليومي", navBulanan: "الشهري", navTahunan: "السنوي", navPiutang: "المستحقات", navTarget: "الأهداف", navGrafik: "الرسوم",
+                optIn: ["الرصيد الافتتاحي", "الراتب", "مكافأة", "مبيعات", "استثمار", "هدية / عيدية", "سداد مستحق", "أخرى"],
+                optOut: ["طعام وشراب", "مواصلات", "تسوق", "فواتير", "ترفيه", "صحة", "تعليم", "أخرى"],
                 confReset: "هل تريد إعادة ضبط جميع بيانات المعاملات؟"
             }
         };
@@ -791,6 +886,7 @@
 
         function resetSessionStateForAuth() {
             transactions = [];
+            receivables = [];
             savingsGoals = [];
             editingId = null;
             isSignUpMode = false;
@@ -823,6 +919,7 @@
 
         function loadUserData(uid) {
             transactions = JSON.parse(localStorage.getItem('kikap_tx_' + uid)) || [];
+            receivables = JSON.parse(localStorage.getItem('kikap_rec_' + uid)) || [];
             savingsGoals = JSON.parse(localStorage.getItem('kikap_goals_' + uid)) || [];
             currency = localStorage.getItem('kikap_cur_' + uid) || 'IDR';
             lang = localStorage.getItem('kikap_lang_' + uid) || 'id';
@@ -835,6 +932,7 @@
             const user = auth.currentUser;
             if (!user) return;
             localStorage.setItem('kikap_tx_' + user.uid, JSON.stringify(transactions));
+            localStorage.setItem('kikap_rec_' + user.uid, JSON.stringify(receivables));
             localStorage.setItem('kikap_goals_' + user.uid, JSON.stringify(savingsGoals));
             localStorage.setItem('kikap_cur_' + user.uid, currency);
             localStorage.setItem('kikap_lang_' + user.uid, lang);
@@ -845,6 +943,7 @@
             const todayStr = new Date().toISOString().split('T')[0];
             document.getElementById('filterDate').value = todayStr;
             document.getElementById('txDate').value = todayStr;
+            document.getElementById('recDate').value = todayStr;
             document.getElementById('filterMonth').value = todayStr.slice(0, 7);
             
             const yearSelect = document.getElementById('filterYear');
@@ -931,6 +1030,16 @@
             document.getElementById('txt-th-out').textContent = t.thOut;
             document.getElementById('txt-th-net').textContent = t.thNet;
 
+            document.getElementById('txt-piutang-title').textContent = t.piutang;
+            document.getElementById('txt-piutang-desc').textContent = t.piutangDesc;
+            document.getElementById('txt-piutang-active-label').textContent = t.piutangActive;
+            document.getElementById('txt-piutang-paid-label').textContent = t.piutangPaid;
+            document.getElementById('txt-add-piutang-title').innerHTML = `<i class="fa-solid fa-plus-circle text-amber-500"></i> ${t.addPiutang}`;
+            document.getElementById('txt-piutang-date-label').textContent = t.piutangDate;
+            document.getElementById('recPerson').placeholder = t.piutangPersonPh;
+            document.getElementById('recAmount').placeholder = t.piutangAmtPh;
+            document.getElementById('txt-create-piutang-btn').innerHTML = `<i class="fa-solid fa-hand-holding-dollar"></i> ${t.createPiutangBtn}`;
+
             document.getElementById('txt-target-title').textContent = t.target;
             document.getElementById('txt-target-desc').textContent = t.targetDesc;
             document.getElementById('txt-add-target-title').innerHTML = `<i class="fa-solid fa-plus-circle text-blue-600"></i> ${t.addTarget}`;
@@ -947,6 +1056,7 @@
             document.getElementById('txt-nav-harian').textContent = t.navHarian;
             document.getElementById('txt-nav-bulanan').textContent = t.navBulanan;
             document.getElementById('txt-nav-tahunan').textContent = t.navTahunan;
+            document.getElementById('txt-nav-piutang').textContent = t.navPiutang;
             document.getElementById('txt-nav-target').textContent = t.navTarget;
             document.getElementById('txt-nav-grafik').textContent = t.navGrafik;
 
@@ -969,7 +1079,7 @@
             const openingBalanceLabels = new Set(["Dana Awal", "Opening Balance", "Saldo Inicial", "期初资金", "الرصيد الافتتاحي"]);
             let categories = type === 'Pemasukan'
                 ? [...t.optIn]
-                : t.optOut.filter(cat => !openingBalanceLabels.has(cat));
+                : t.optOut.filter(cat => !openingBalanceLabels.has(cat) && !BAYAR_PIUTANG_LABELS.has(cat));
 
             categories.forEach(cat => {
                 let opt = document.createElement('option');
@@ -995,10 +1105,12 @@
         }
 
         function syncSidebarActiveState(tabId) {
+            const badgeTabs = new Set(['target', 'piutang']);
             document.querySelectorAll('.nav-btn').forEach(btn => {
-                btn.className = "nav-btn w-full flex items-center " + (btn.dataset.tab === 'target' ? "justify-between " : "") + "gap-3 px-3 py-2.5 rounded-xl text-xs font-medium text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700/70 transition-colors text-left";
+                const isBadgeTab = badgeTabs.has(btn.dataset.tab);
+                btn.className = "nav-btn w-full flex items-center " + (isBadgeTab ? "justify-between " : "") + "gap-3 px-3 py-2.5 rounded-xl text-xs font-medium text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700/70 transition-colors text-left";
                 if (btn.dataset.tab === tabId) {
-                    btn.className = "nav-btn w-full flex items-center " + (btn.dataset.tab === 'target' ? "justify-between " : "") + "gap-3 px-3 py-2.5 rounded-xl text-xs font-bold bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 transition-colors text-left";
+                    btn.className = "nav-btn w-full flex items-center " + (isBadgeTab ? "justify-between " : "") + "gap-3 px-3 py-2.5 rounded-xl text-xs font-bold bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 transition-colors text-left";
                 }
             });
         }
@@ -1031,6 +1143,34 @@
             renderApp();
         }
 
+        function isReceivablePaymentTx(tx) {
+            return tx && tx.type === 'Pemasukan' && BAYAR_PIUTANG_LABELS.has(tx.category);
+        }
+
+        function applyReceivablePaymentToLedger(amount) {
+            let remainingPayment = amount;
+            for (const rec of receivables) {
+                if (remainingPayment <= 0) break;
+                const unpaid = Math.max(rec.amount - (rec.paid || 0), 0);
+                if (unpaid <= 0) continue;
+                const applied = Math.min(unpaid, remainingPayment);
+                rec.paid = (rec.paid || 0) + applied;
+                remainingPayment -= applied;
+            }
+        }
+
+        function recalculateReceivablesFromPayments() {
+            receivables.forEach(rec => {
+                rec.paid = 0;
+            });
+            const paymentTxs = transactions
+                .filter(isReceivablePaymentTx)
+                .sort((a, b) => String(a.date).localeCompare(String(b.date)) || a.id - b.id);
+            paymentTxs.forEach(tx => {
+                applyReceivablePaymentToLedger(tx.amount);
+            });
+        }
+
         function handleTransactionForm(e) {
             e.preventDefault();
             const type = document.getElementById('txType').value;
@@ -1046,6 +1186,7 @@
                 transactions.push({ id: Date.now(), date, type, category, desc, amount });
             }
 
+            recalculateReceivablesFromPayments();
             saveUserData();
             document.getElementById('transactionForm').reset();
             document.getElementById('txDate').value = new Date().toISOString().split('T')[0];
@@ -1083,6 +1224,7 @@
 
         function deleteTransaction(id) {
             transactions = transactions.filter(t => t.id !== id);
+            recalculateReceivablesFromPayments();
             saveUserData();
             renderApp();
         }
@@ -1091,11 +1233,64 @@
             const t = dict[lang] || dict['id'];
             if(confirm(t.confReset)) {
                 transactions = [];
+                recalculateReceivablesFromPayments();
                 saveUserData();
                 editingId = null;
                 applyLanguage();
                 renderApp();
             }
+        }
+
+        function addReceivable(e) {
+            e.preventDefault();
+            const date = document.getElementById('recDate').value;
+            const person = document.getElementById('recPerson').value.trim();
+            const amount = parseFloat(document.getElementById('recAmount').value);
+            if (!person || isNaN(amount) || amount <= 0) return;
+
+            receivables.push({ id: Date.now(), date, person, amount, paid: 0 });
+            recalculateReceivablesFromPayments();
+            saveUserData();
+            document.getElementById('receivableForm').reset();
+            document.getElementById('recDate').value = new Date().toISOString().split('T')[0];
+            renderApp();
+        }
+
+        function recordReceivablePayment(id) {
+            const rec = receivables.find(r => r.id === id);
+            if (!rec) return;
+            const remaining = Math.max(rec.amount - (rec.paid || 0), 0);
+            if (remaining <= 0) return;
+
+            const inputVal = prompt(`Nominal bayar piutang untuk "${rec.person}" (Sisa: ${formatMoney(remaining)}):`, String(remaining));
+            if (inputVal === null) return;
+            const payAmt = parseFloat(inputVal);
+            if (isNaN(payAmt) || payAmt <= 0) return;
+
+            const actualPay = Math.min(payAmt, remaining);
+            const t = dict[lang] || dict['id'];
+            const payCategory = t.optIn.find(c => BAYAR_PIUTANG_LABELS.has(c)) || "Bayar Piutang";
+            const todayStr = new Date().toISOString().split('T')[0];
+
+            transactions.push({
+                id: Date.now(),
+                date: todayStr,
+                type: 'Pemasukan',
+                category: payCategory,
+                desc: `Bayar piutang: ${rec.person}`,
+                amount: actualPay
+            });
+
+            recalculateReceivablesFromPayments();
+            saveUserData();
+            renderApp();
+        }
+
+        function deleteReceivable(id) {
+            receivables = receivables.filter(r => r.id !== id);
+            recalculateReceivablesFromPayments();
+            saveUserData();
+            renderApp();
         }
 
         function addSavingsGoal(e) {
@@ -1198,6 +1393,57 @@
                 yearlyTableHtml += `<tr class="hover:bg-gray-50 dark:hover:bg-gray-700/50"><td class="p-2 font-medium">${monthNames[idx]}</td><td class="p-2 text-right text-blue-600">${formatMoney(mb.inc)}</td><td class="p-2 text-right text-red-600">${formatMoney(mb.exp)}</td><td class="p-2 text-right font-bold text-emerald-600">${formatMoney(mb.inc - mb.exp)}</td></tr>`;
             });
             document.getElementById('yearlyTableBody').innerHTML = yearlyTableHtml;
+
+            // Perhitungan Piutang Terpisah (hanya berkurang saat ada Pemasukan kategori Bayar Piutang)
+            let activeReceivableTotal = 0;
+            let paidReceivableTotal = 0;
+            let activeCount = 0;
+            let receivablesHtml = '';
+
+            receivables.forEach(rec => {
+                const paid = rec.paid || 0;
+                const remaining = Math.max(rec.amount - paid, 0);
+                activeReceivableTotal += remaining;
+                paidReceivableTotal += paid;
+                if (remaining > 0) activeCount += 1;
+
+                const pctPaid = rec.amount > 0 ? Math.min(Math.round((paid / rec.amount) * 100), 100) : 0;
+                const isSettled = remaining === 0;
+
+                receivablesHtml += `
+                    <div class="bg-white dark:bg-gray-800 p-3.5 rounded-2xl shadow-sm border dark:border-gray-700 space-y-2 w-full">
+                        <div class="flex justify-between items-start gap-2">
+                            <div>
+                                <div class="font-bold text-xs flex items-center gap-1.5">
+                                    <i class="fa-solid fa-user text-amber-500 text-[11px]"></i>
+                                    <span>${rec.person}</span>
+                                </div>
+                                <p class="text-[10px] text-gray-400">${rec.date} • ${isSettled ? 'Lunas' : 'Belum Lunas'}</p>
+                            </div>
+                            <div class="flex items-center gap-1">
+                                ${!isSettled ? `<button type="button" onclick="recordReceivablePayment(${rec.id})" class="bg-emerald-50 dark:bg-emerald-900/30 text-emerald-600 dark:text-emerald-400 px-2 py-1 rounded-lg text-[10px] font-semibold" title="Catat Pembayaran Masuk">Bayar</button>` : ''}
+                                <button type="button" onclick="deleteReceivable(${rec.id})" class="text-red-400 hover:text-red-600 p-1 text-[11px]" title="Hapus"><i class="fa-solid fa-trash-can"></i></button>
+                            </div>
+                        </div>
+                        <div class="flex justify-between text-[11px] font-semibold">
+                            <span class="text-amber-500">Sisa: ${formatMoney(remaining)}</span>
+                            <span class="text-gray-400">Awal: ${formatMoney(rec.amount)}</span>
+                        </div>
+                        <div class="w-full bg-gray-100 dark:bg-gray-700 h-1.5 rounded-full overflow-hidden">
+                            <div class="bg-emerald-500 h-full rounded-full" style="width: ${pctPaid}%"></div>
+                        </div>
+                    </div>
+                `;
+            });
+
+            if (receivables.length === 0) {
+                receivablesHtml = `<div class="p-3 text-center text-gray-400 text-xs bg-white dark:bg-gray-800 rounded-2xl border dark:border-gray-700 w-full">${t.emptyPiutang}</div>`;
+            }
+
+            document.getElementById('receivableBadge').textContent = activeCount;
+            document.getElementById('totalActiveReceivable').textContent = formatMoney(activeReceivableTotal);
+            document.getElementById('totalPaidReceivable').textContent = formatMoney(paidReceivableTotal);
+            document.getElementById('receivablesContainer').innerHTML = receivablesHtml;
 
             let totalAllIncome = transactions.filter(t_item => t_item.type === 'Pemasukan').reduce((sum, t_item) => sum + t_item.amount, 0);
             let totalAllExpense = transactions.filter(t_item => t_item.type === 'Pengeluaran').reduce((sum, t_item) => sum + t_item.amount, 0);
